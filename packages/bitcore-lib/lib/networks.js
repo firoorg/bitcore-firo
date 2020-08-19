@@ -166,19 +166,15 @@ var livenet = get('livenet');
 addNetwork({
   name: 'testnet',
   alias: 'test',
-  pubkeyhash: 0x6f,
-  privatekey: 0xef,
-  scripthash: 0xc4,
+  pubkeyhash: 0x41,
+  privatekey: 0xb9,
+  scripthash: 0xb2,
   bech32prefix: 'tb',
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394,
-  networkMagic: 0x0b110907,
-  port: 18333,
-  dnsSeeds: [
-    'testnet-seed.bitcoin.petertodd.org',
-    'testnet-seed.bluematt.me',
-    'testnet-seed.alexykot.me',
-    'testnet-seed.bitcoin.schildbach.de'
+  networkMagic: 0xcffcbeea,
+  port: 18168,
+  dnsSeeds: [ 
   ]
 });
 

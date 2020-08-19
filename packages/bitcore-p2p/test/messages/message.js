@@ -11,13 +11,13 @@ describe('Message', function() {
     it('construct with magic number and command', function() {
       var message = new Message({
         network: {
-          networkMagic: 0xd9b4bef9
+          networkMagic: 0xcffcbeea
         },
         command: 'command'
       });
       should.exist(message);
       message.command.should.equal('command');
-      message.network.networkMagic.should.equal(0xd9b4bef9);
+      message.network.networkMagic.should.equal(0xcffcbeea);
     });
   });
 
