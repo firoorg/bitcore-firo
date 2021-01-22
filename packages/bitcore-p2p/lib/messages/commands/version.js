@@ -37,7 +37,7 @@ function VersionMessage(arg, options) {
   this.nonce = arg.nonce || utils.getNonce();
   this.services = arg.services || new BN(1, 10);
   this.timestamp = arg.timestamp || new Date();
-  this.subversion = arg.subversion || '/bitcore:' + packageInfo.version + '/';
+  this.subversion = arg.subversion || '/Satoshi:0.14.0.0/'; //+ packageInfo.version + '/';
   this.startHeight = arg.startHeight || 0;
   this.relay = arg.relay === false ? false : true;
 }
@@ -49,16 +49,9 @@ VersionMessage.prototype.setPayload = function(payload) {
   this.services = parser.readUInt64LEBN();
   this.timestamp = new Date(parser.readUInt64LEBN().toNumber() * 1000);
 
-  this.addrMe = {
-    services: parser.readUInt64LEBN(),
-    ip: utils.parseIP(parser),
-    port: parser.readUInt16BE()
-  };
-  this.addrYou = {
-    services: parser.readUInt64LEBN(),
-    ip: utils.parseIP(parser),
-    port: parser.readUInt16BE()
-  };
+  this.addrMe = utils.parseAddr(parser);
+  this.addrYou = utils.parseAddr(parser);
+
   this.nonce = parser.read(8);
   this.subversion = parser.readVarLengthBuffer().toString();
   this.startHeight = parser.readUInt32LE();
@@ -68,6 +61,8 @@ VersionMessage.prototype.setPayload = function(payload) {
   } else {
     this.relay = !!parser.readUInt8();
   }
+  console.log("Here");
+  parser.readAllddddddd();
   utils.checkFinished(parser);
 };
 

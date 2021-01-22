@@ -11,7 +11,7 @@ describe('Message', function() {
     it('construct with magic number and command', function() {
       var message = new Message({
         network: {
-          networkMagic: 0xd9b4bef9
+          networkMagic: 0xcffcbeea
         },
         command: 'command'
       });
