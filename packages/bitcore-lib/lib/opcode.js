@@ -214,7 +214,16 @@ Opcode.map = {
   // template matching params
   OP_PUBKEYHASH: 253,
   OP_PUBKEY: 254,
-  OP_INVALIDOPCODE: 255
+  OP_INVALIDOPCODE: 255,
+
+  // FIRO related part
+  OP_ZEROCOIN_MINT: 193,
+  OP_ZEROCOIN_SPEND: 194,
+  OP_SIGMA_MINT: 195,
+  OP_SIGMA_SPEND: 196,
+  OP_LELANTUS_MINT: 197,
+  OP_LELANTUS_JMINT: 198,
+  OP_LELANTUS_JOIN_SPLIT: 199
 };
 
 Opcode.reverseMap = [];

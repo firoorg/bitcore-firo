@@ -62,8 +62,8 @@ export interface MintOp {
         wallets: Array<ObjectID>;
       };
     };
-    upsert: true;
-    forceServerObjectId: true;
+    upsert: boolean;
+    forceServerObjectId: boolean;
   };
 }
 
@@ -224,6 +224,11 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
       read: () => {}
     });
 
+    const newMintsStream = new Readable({
+      objectMode: true,
+      read: () => {}
+    });
+
     const txStream = new Readable({
       objectMode: true,
       read: () => {}
@@ -238,12 +243,15 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
         .on('finish', r)
     );
 
-    this.streamSpendOps({ ...params, spentStream });
+    this.streamSpendOps({ ...params, spentStream, newMintsStream });
     await new Promise(r =>
       spentStream
         .pipe(new PruneMempoolStream(chain, network, initialSyncComplete))
         .pipe(new MongoWriteStream(CoinStorage.collection))
-        .on('finish', r)
+        .on('finish', () => newMintsStream
+          .pipe(new MongoWriteStream(CoinStorage.collection))
+          .on('finish', r)
+        )
     );
 
     this.streamTxOps({ ...params, txs: params.txs as TaggedBitcoinTx[], txStream });
@@ -495,11 +503,18 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
         let address = '';
         if (output.script) {
           address = output.script.toAddress(network).toString(true);
-          if (address === 'false' && output.script.classify() === 'Pay to public key') {
-            let hash = Libs.get(chain).lib.crypto.Hash.sha256ripemd160(output.script.chunks[0].buf);
-            address = Libs.get(chain)
-              .lib.Address(hash, network)
-              .toString(true);
+          if (address === 'false') {
+            const classification = output.script.classify();
+            if (classification === 'Pay to public key') {
+              let hash = Libs.get(chain).lib.crypto.Hash.sha256ripemd160(output.script.chunks[0].buf);
+              address = Libs.get(chain)
+                .lib.Address(hash, network)
+                .toString(true);
+            } else {
+              if (classification !== 'Unknown') {
+                address = classification;
+              }
+            }
           }
         }
         mintBatch.push({
@@ -552,6 +567,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
     chain: string;
     network: string;
     spentStream: Readable;
+    newMintsStream: Readable;
   }) {
     let { chain, network, height, parentChain, forkHeight } = params;
     if (parentChain && forkHeight && height < forkHeight) {
@@ -559,38 +575,84 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
       return;
     }
     let spendOpsBatch = new Array<SpendOp>();
+    let newMintsBatch = new Array<MintOp>();
     for (let tx of params.txs) {
       if (tx.isCoinbase()) {
         continue;
       }
+      let inputIndex: number = -1;
       for (let input of tx.inputs) {
+        ++inputIndex;
         let inputObj = input.toObject();
-        const updateQuery = {
-          updateOne: {
-            filter: {
-              mintTxid: inputObj.prevTxId,
-              mintIndex: inputObj.outputIndex,
-              spentHeight: { $lt: SpentHeightIndicators.minimum },
-              chain,
-              network
-            },
-            update: {
-              $set: { spentTxid: tx._hash || tx.hash, spentHeight: height, sequenceNumber: inputObj.sequenceNumber }
+        if (inputObj.isNotTxOutput) {
+          const insertQuery = {
+            updateOne: {
+              filter: {
+                spentTxid: tx._hash,
+                mintTxid: '',
+                mintIndex: inputIndex,
+                chain,
+                network
+              },
+              update: {
+                $set: {
+                  chain,
+                  network,
+                  address: inputObj.bitcoinScript ? inputObj.bitcoinScript.classify() : '',
+                  mintHeight: height,
+                  mintIndex: inputIndex,
+                  spentTxid: tx._hash,
+                  coinbase: false,
+                  value: inputObj.inputValue ? inputObj.inputValue : 0,
+                  script: inputObj.bitcoinScript ? inputObj.bitcoinScript.toBuffer() : Buffer.from([])
+                },
+                $setOnInsert: {
+                  spentHeight: SpentHeightIndicators.unspent,
+                  wallets: []
+                }
+              },
+              upsert: true,
+              forceServerObjectId: true
             }
-          }
-        };
-        spendOpsBatch.push(updateQuery);
+          };
+          newMintsBatch.push(insertQuery);
+        } else {
+          const updateQuery = {
+            updateOne: {
+              filter: {
+                mintTxid: inputObj.prevTxId,
+                mintIndex: inputObj.outputIndex,
+                spentHeight: { $lt: SpentHeightIndicators.minimum },
+                chain,
+                network
+              },
+              update: {
+                $set: { spentTxid: tx._hash || tx.hash, spentHeight: height, sequenceNumber: inputObj.sequenceNumber }
+              }
+            }
+          };
+          spendOpsBatch.push(updateQuery);
+        }
       }
       if (spendOpsBatch.length > MAX_BATCH_SIZE) {
         params.spentStream.push(spendOpsBatch);
         spendOpsBatch = new Array<SpendOp>();
       }
+      if (newMintsBatch.length > MAX_BATCH_SIZE) {
+        params.newMintsStream.push(newMintsBatch);
+        newMintsBatch = new Array<MintOp>();
+      }
     }
     if (spendOpsBatch.length) {
       params.spentStream.push(spendOpsBatch);
     }
+    if (newMintsBatch.length) {
+      params.newMintsStream.push(newMintsBatch);
+    }
     params.spentStream.push(null);
+    params.newMintsStream.push(null);
     spendOpsBatch = new Array<SpendOp>();
+    newMintsBatch = new Array<MintOp>();
   }
 
   async findAllRelatedOutputs(forTx: string) {

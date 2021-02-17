@@ -119,7 +119,7 @@ export class BitcoinBlock extends BaseBlock<IBtcBlock> {
       bits: header.bits,
       nonce: header.nonce,
       transactionCount: block.transactions.length,
-      size: block.toBuffer().length,
+      size: block.toBuffer().length + (header.firoMTP ? 198864 : 0),
       reward: block.transactions[0].outputAmount,
       processed: false
     };

@@ -53,14 +53,14 @@
     <ion-col col-12 col-md-5>
 
       <ion-list [hidden]="!tx.isCoinBase">
-        <ion-item>
+        <ion-item *ngIf="tx.vout.length > 0">
           No Inputs (Newly Generated Coins)
         </ion-item>
       </ion-list>
 
       <ion-list [hidden]="tx.isCoinBase">
         <ion-item *ngFor="let vin of aggregateItems(tx.vin); let i = index ">
-          <button title="Go to Transaction" type="button" tabindex="0" item-start ion-button *ngIf="expanded" (click)="goToTx(vin.items[i].mintTxid, i, false)" clear
+          <button title="Go to Transaction" type="button" tabindex="0" item-start ion-button *ngIf="expanded" (click)="goToTx(vin.items[0].mintTxid, vin.items[0].mintIndex, false)" clear
             icon-only>
             <ion-icon color="primary" name="ios-arrow-forward"></ion-icon>
           </button>
@@ -68,7 +68,7 @@
           <div class="ellipsis">
             <p>
               <a (click)="goToAddress(vin.address)"
-                [ngClass]="{'disabled-link': getAddress(vin) === 'Unparsed address' }" role="button" tabindex="0">{{ getAddress(vin) }}</a>
+                [ngClass]="{'disabled-link': disableAddressLink(vin) }" role="button" tabindex="0">{{ getAddress(vin) }}</a>
             </p>
           </div>
           <div [hidden]="!expanded">
@@ -86,8 +86,11 @@
             </div>
           </div>
 
-          <div item-end>
+          <div item-end *ngIf="getAddress(vin)!=='LelantusJoinSplit'">
             {{ currencyProvider.getConvertedNumber(vin.value, chainNetwork.chain) | number:'1.0-8' }} {{ currencyProvider.currencySymbol }}
+          </div>
+          <div item-end *ngIf="getAddress(vin)==='LelantusJoinSplit'">
+            Hidden
           </div>
         </ion-item>
 
@@ -112,7 +115,7 @@
           <div>
             <div class="ellipsis">
               <p>
-                <a [ngClass]="{'disabled-link': getAddress(vout) === 'Unparsed address' }"
+                <a [ngClass]="{'disabled-link': disableAddressLink(vout) }"
                   (click)="goToAddress(vout.address)" role="button" tabindex="0">{{ getAddress(vout) }}</a>
               </p>
             </div>
@@ -130,10 +133,13 @@
             </div>
           </div>
 
-          <div item-end>
+          <div item-end *ngIf="getAddress(vout)!=='LelantusJMint'">
             {{ currencyProvider.getConvertedNumber(vout.value, chainNetwork.chain) | number:'1.0-8' }} {{ currencyProvider.currencySymbol }}
             <span [hidden]="!vout.spentTxid">(S)</span>
             <span [hidden]="vout.spentTxid">(U)</span>
+          </div>
+          <div item-end *ngIf="getAddress(vout)==='LelantusJMint'">
+            Hidden
           </div>
 
           <button title="Go to Transaction" item-end ion-button *ngIf="expanded && vout.spentTxid && vout.spentTxid !== '' " (click)="

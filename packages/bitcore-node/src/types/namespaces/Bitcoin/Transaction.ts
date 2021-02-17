@@ -12,6 +12,9 @@ export interface BitcoinInputObj {
   prevTxId: string;
   outputIndex: number;
   sequenceNumber: number;
+  isNotTxOutput?: boolean;
+  bitcoinScript?: BitcoinScript;
+  inputValue?: number;
 }
 export interface BitcoinInput {
   toObject: () => BitcoinInputObj;

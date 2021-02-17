@@ -82,6 +82,16 @@ export class TransactionDetailsComponent implements OnInit {
     return v.address;
   }
 
+  public disableAddressLink(v: ApiCoin): boolean {
+    const address: string = this.getAddress(v);
+    return address === 'Unparsed address' ||
+      address === 'LelantusMint' ||
+      address === 'LelantusJMint' ||
+      address === 'LelantusJoinSplit' ||
+      address === 'Sigmamint' ||
+      address === 'Sigmaspend';
+  }
+
   public getConfirmations() {
     this.txProvider
       .getConfirmations(this.tx.blockheight, this.chainNetwork)
@@ -147,15 +157,19 @@ export class TransactionDetailsComponent implements OnInit {
         continue;
       }
 
-      const address: string =
+      let address: string =
         items[i].address ||
         (items[i].scriptPubKey && items[i].scriptPubKey.addresses[0]);
+      const originalAddress: string = address;
+      if (address === "Sigmaspend" && this.expanded) {
+        address += "_" + i;
+      }
 
       if (!tmp[address]) {
         tmp[address] = {};
         tmp[address].valueSat = 0;
         tmp[address].count = 0;
-        tmp[address].address = address;
+        tmp[address].address = originalAddress;
         tmp[address].items = [];
       }
       tmp[address].isSpent = items[i].spentTxId;

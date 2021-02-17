@@ -520,6 +520,55 @@ Script.prototype.isDataOut = function() {
 };
 
 /**
+ * @returns {boolean} if this is a zero coin mint script
+ */
+Script.prototype.isZeroCoinMint = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_ZEROCOIN_MINT;
+};
+
+/**
+ * @returns {boolean} if this is a zero coin spend script
+ */
+Script.prototype.isZeroCoinSpend = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_ZEROCOIN_SPEND;
+};
+
+/**
+ * @returns {boolean} if this is a sigma mint script
+ */
+Script.prototype.isSigmaMint = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_SIGMA_MINT;
+};
+
+/**
+ * @returns {boolean} if this is a sigma spend script
+ */
+Script.prototype.isSigmaSpend = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_SIGMA_SPEND;
+};
+
+/**
+ * @returns {boolean} if this is a lelantus mint script
+ */
+Script.prototype.isLelantusMint = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_LELANTUS_MINT;
+};
+
+/**
+ * @returns {boolean} if this is a lelantus jmint script
+ */
+Script.prototype.isLelantusJMint = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_LELANTUS_JMINT;
+};
+
+/**
+ * @returns {boolean} if this is a lelantus join split script
+ */
+Script.prototype.isLelantusJoinSplit = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_LELANTUS_JOIN_SPLIT;
+};
+
+/**
  * Retrieve the associated data for this script.
  * In the case of a pay to public key hash, P2SH, P2WSH, or P2WPKH, return the hash.
  * In the case of a standard OP_RETURN, return the data
@@ -561,6 +610,14 @@ Script.types.SCRIPTHASH_IN = 'Spend from script hash';
 Script.types.MULTISIG_OUT = 'Pay to multisig';
 Script.types.MULTISIG_IN = 'Spend from multisig';
 Script.types.DATA_OUT = 'Data push';
+// FIRO related part
+Script.types.ZERO_COIN_MINT = 'Zeromint';
+Script.types.ZERO_COIN_SPEND = 'Zerospend';
+Script.types.SIGMA_MINT = 'Sigmamint';
+Script.types.SIGMA_SPEND = 'Sigmaspend';
+Script.types.LELANTUS_MINT = 'LelantusMint';
+Script.types.LELANTUS_JMINT = 'LelantusJMint';
+Script.types.LELANTUS_JOIN_SPLIT = 'LelantusJoinSplit';
 
 Script.OP_RETURN_STANDARD_SIZE = 80;
 
@@ -585,12 +642,23 @@ Script.outputIdentifiers.PUBKEYHASH_OUT = Script.prototype.isPublicKeyHashOut;
 Script.outputIdentifiers.MULTISIG_OUT = Script.prototype.isMultisigOut;
 Script.outputIdentifiers.SCRIPTHASH_OUT = Script.prototype.isScriptHashOut;
 Script.outputIdentifiers.DATA_OUT = Script.prototype.isDataOut;
+// FIRO related part
+Script.firoOutputIdentifiers = {};
+Script.firoOutputIdentifiers.LELANTUS_JMINT = Script.prototype.isLelantusJMint;
+Script.firoOutputIdentifiers.LELANTUS_MINT = Script.prototype.isLelantusMint;
+Script.firoOutputIdentifiers.SIGMA_MINT = Script.prototype.isSigmaMint;
+Script.firoOutputIdentifiers.ZERO_COIN_MINT = Script.prototype.isZeroCoinMint;
 
 /**
  * @returns {object} The Script type if it is a known form,
  * or Script.UNKNOWN if it isn't
  */
 Script.prototype.classifyOutput = function() {
+  for (var type in Script.firoOutputIdentifiers) {
+    if (Script.firoOutputIdentifiers[type].bind(this)()) {
+      return Script.types[type];
+    }
+  }
   for (var type in Script.outputIdentifiers) {
     if (Script.outputIdentifiers[type].bind(this)()) {
       return Script.types[type];
@@ -604,12 +672,22 @@ Script.inputIdentifiers.PUBKEY_IN = Script.prototype.isPublicKeyIn;
 Script.inputIdentifiers.PUBKEYHASH_IN = Script.prototype.isPublicKeyHashIn;
 Script.inputIdentifiers.MULTISIG_IN = Script.prototype.isMultisigIn;
 Script.inputIdentifiers.SCRIPTHASH_IN = Script.prototype.isScriptHashIn;
+// FIRO related part
+Script.firoInputIdentifiers = {};
+Script.firoInputIdentifiers.LELANTUS_JOIN_SPLIT = Script.prototype.isLelantusJoinSplit;
+Script.firoInputIdentifiers.SIGMA_SPEND = Script.prototype.isSigmaSpend;
+Script.firoInputIdentifiers.ZERO_COIN_SPEND = Script.prototype.isZeroCoinSpend;
 
 /**
  * @returns {object} The Script type if it is a known form,
  * or Script.UNKNOWN if it isn't
  */
 Script.prototype.classifyInput = function() {
+  for (var type in Script.firoInputIdentifiers) {
+    if (Script.firoInputIdentifiers[type].bind(this)()) {
+      return Script.types[type];
+    }
+  }
   for (var type in Script.inputIdentifiers) {
     if (Script.inputIdentifiers[type].bind(this)()) {
       return Script.types[type];

@@ -109,7 +109,9 @@ export class TransactionListComponent implements OnInit {
       tx.txid = txid;
       tx.vin = inputs.filter(input => input.spentTxid === txid);
       tx.vout = outputs.filter(output => output.mintTxid === txid);
-      tx.blockheight = tx.vout[0].mintHeight;
+      if (tx.vout.length > 0) {
+        tx.blockheight = tx.vout[0].mintHeight;
+      }
       tx.fee = this.txProvider.getFee(tx);
       tx.valueOut = tx.vout
         .filter(output => output.mintTxid === txid)
@@ -126,7 +128,9 @@ export class TransactionListComponent implements OnInit {
       tx.vin = txidCoins.inputs.filter(input => input.spentTxid === txid);
       tx.vout = txidCoins.outputs.filter(output => output.mintTxid === txid);
       tx.fee = this.txProvider.getFee(tx);
-      tx.blockheight = tx.vout[0].mintHeight;
+      if (tx.vout.length > 0) {
+        tx.blockheight = tx.vout[0].mintHeight;
+      }
       tx.blocktime = new Date(tx.blockTime).getTime() / 1000;
       tx.time = this.blocktime
         ? this.blocktime
