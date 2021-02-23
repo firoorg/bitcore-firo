@@ -56,6 +56,7 @@ export class TransactionPage {
       response => {
         let tx;
         if (
+          this.chainNetwork.chain === 'FIRO' ||
           this.chainNetwork.chain === 'BTC' ||
           this.chainNetwork.chain === 'BCH' ||
           this.chainNetwork.chain === 'DOGE'

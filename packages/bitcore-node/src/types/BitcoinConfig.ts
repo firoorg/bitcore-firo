@@ -5,7 +5,7 @@ export interface ConnectionConfig {
   chainSource: string;
   trustedPeers: Array<HostPort>;
   rpc: HostPort & UserPassword;
-  parentChain: 'BTC';
+  parentChain: 'FIRO';
   forkHeight: number;
 }
 export interface NetworkConfig {

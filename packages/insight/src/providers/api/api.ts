@@ -39,6 +39,7 @@ export class ApiProvider {
   };
 
   public ratesAPI = {
+    firo: 'https://api.coingecko.com/api/v3/simple/price?ids=zcoin&vs_currencies=usd',
     btc: 'https://bitpay.com/api/rates',
     bch: 'https://bitpay.com/api/rates/bch',
     doge: 'https://bitpay.com/api/rates/doge',

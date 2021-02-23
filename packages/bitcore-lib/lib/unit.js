@@ -6,9 +6,9 @@ var errors = require('./errors');
 var $ = require('./util/preconditions');
 
 var UNITS = {
-  'BTC'      : [1e8, 8],
-  'mBTC'     : [1e5, 5],
-  'uBTC'     : [1e2, 2],
+  'FIRO'      : [1e8, 8],
+  'mFIRO'     : [1e5, 5],
+  'uFIRO'     : [1e2, 2],
   'bits'     : [1e2, 2],
   'satoshis' : [1, 0]
 };
@@ -48,7 +48,7 @@ function Unit(amount, code) {
       throw new errors.Unit.InvalidRate(code);
     }
     amount = amount / code;
-    code = Unit.BTC;
+    code = Unit.FIRO;
   }
 
   this._value = this._from(amount, code);
@@ -86,7 +86,7 @@ Unit.fromObject = function fromObject(data){
  * @returns {Unit} A Unit instance
  */
 Unit.fromBTC = function(amount) {
-  return new Unit(amount, Unit.BTC);
+  return new Unit(amount, Unit.FIRO);
 };
 
 /**
@@ -96,7 +96,7 @@ Unit.fromBTC = function(amount) {
  * @returns {Unit} A Unit instance
  */
 Unit.fromMillis = Unit.fromMilis = function(amount) {
-  return new Unit(amount, Unit.mBTC);
+  return new Unit(amount, Unit.mFIRO);
 };
 
 /**
@@ -148,7 +148,7 @@ Unit.prototype.to = function(code) {
     if (code <= 0) {
       throw new errors.Unit.InvalidRate(code);
     }
-    return parseFloat((this.BTC * code).toFixed(2));
+    return parseFloat((this.FIRO * code).toFixed(2));
   }
 
   if (!UNITS[code]) {
@@ -165,7 +165,7 @@ Unit.prototype.to = function(code) {
  * @returns {Number} The value converted to BTC
  */
 Unit.prototype.toBTC = function() {
-  return this.to(Unit.BTC);
+  return this.to(Unit.FIRO);
 };
 
 /**
@@ -174,7 +174,7 @@ Unit.prototype.toBTC = function() {
  * @returns {Number} The value converted to mBTC
  */
 Unit.prototype.toMillis = Unit.prototype.toMilis = function() {
-  return this.to(Unit.mBTC);
+  return this.to(Unit.mFIRO);
 };
 
 /**
@@ -221,8 +221,8 @@ Unit.prototype.toString = function() {
  */
 Unit.prototype.toObject = Unit.prototype.toJSON = function toObject() {
   return {
-    amount: this.BTC,
-    code: Unit.BTC
+    amount: this.FIRO,
+    code: Unit.FIRO
   };
 };
 

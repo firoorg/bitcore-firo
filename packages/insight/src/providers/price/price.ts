@@ -23,9 +23,12 @@ export class PriceProvider {
     if (currency === 'USD') {
       let ratesAPI;
       switch (this.api.getConfig().chain) {
-        case 'BTC':
-          ratesAPI = this.api.ratesAPI.btc;
+        case 'FIRO':
+          ratesAPI = this.api.ratesAPI.firo;
           break;
+        case 'BTC':
+            ratesAPI = this.api.ratesAPI.btc;
+            break;
         case 'BCH':
           ratesAPI = this.api.ratesAPI.bch;
           break;
@@ -38,6 +41,11 @@ export class PriceProvider {
       }
       this.api.httpClient.get(ratesAPI).subscribe(
         (data: any) => {
+          if (this.api.getConfig().chain === "FIRO") {
+            this.currencyProvider.factor = data.zcoin.usd;
+            this.currencyProvider.loading = false;
+            return;
+          }
           const currencyParsed: any = data;
           _.each(currencyParsed, o => {
             this.rates[o.code] = o.rate;
