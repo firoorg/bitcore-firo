@@ -68,7 +68,7 @@
           <div class="ellipsis">
             <p>
               <a (click)="goToAddress(vin.address)"
-                [ngClass]="{'disabled-link': disableAddressLink(vin) }" role="button" tabindex="0">{{ getAddress(vin) }}</a>
+                [ngClass]="{'disabled-link': getAddress(vin) === 'Unparsed address' }" role="button" tabindex="0">{{ getAddress(vin) }}</a>
             </p>
           </div>
           <div [hidden]="!expanded">
@@ -86,10 +86,10 @@
             </div>
           </div>
 
-          <div item-end *ngIf="getAddress(vin)!=='LelantusJoinSplit'">
+          <div item-end *ngIf="getAddress(vin)!=='Lelantusjsplit'">
             {{ currencyProvider.getConvertedNumber(vin.value, chainNetwork.chain) | number:'1.0-8' }} {{ currencyProvider.currencySymbol }}
           </div>
-          <div item-end *ngIf="getAddress(vin)==='LelantusJoinSplit'">
+          <div item-end *ngIf="getAddress(vin)==='Lelantusjsplit'">
             Hidden
           </div>
         </ion-item>
@@ -115,7 +115,7 @@
           <div>
             <div class="ellipsis">
               <p>
-                <a [ngClass]="{'disabled-link': disableAddressLink(vout) }"
+                <a [ngClass]="{'disabled-link': getAddress(vout) === 'Unparsed address' }"
                   (click)="goToAddress(vout.address)" role="button" tabindex="0">{{ getAddress(vout) }}</a>
               </p>
             </div>
@@ -133,12 +133,12 @@
             </div>
           </div>
 
-          <div item-end *ngIf="getAddress(vout)!=='LelantusJMint'">
+          <div item-end *ngIf="getAddress(vout)!=='Lelantusjmint'">
             {{ currencyProvider.getConvertedNumber(vout.value, chainNetwork.chain) | number:'1.0-8' }} {{ currencyProvider.currencySymbol }}
             <span [hidden]="!vout.spentTxid">(S)</span>
             <span [hidden]="vout.spentTxid">(U)</span>
           </div>
-          <div item-end *ngIf="getAddress(vout)==='LelantusJMint'">
+          <div item-end *ngIf="getAddress(vout)==='Lelantusjmint'">
             Hidden
           </div>
 

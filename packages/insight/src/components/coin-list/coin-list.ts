@@ -84,10 +84,15 @@ export class CoinListComponent implements OnInit {
 
   processData(data) {
     const txs = [];
+    const isHidden: boolean = this.addrStr === "Lelantusjmint" || this.addrStr === "Lelantusjsplit";
     data.forEach(tx => {
       const { mintHeight, mintTxid, value, spentHeight, spentTxid } = tx;
-      txs.push({ height: spentHeight, spentTxid, value });
-      txs.push({ height: mintHeight, mintTxid, value });
+      if (spentTxid) {
+        txs.push({ height: spentHeight, spentTxid, value, isHidden });
+      }
+      if (mintTxid) {
+        txs.push({ height: mintHeight, mintTxid, value, isHidden });
+      }
     });
 
     return txs;

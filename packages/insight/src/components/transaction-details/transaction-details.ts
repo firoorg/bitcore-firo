@@ -82,16 +82,6 @@ export class TransactionDetailsComponent implements OnInit {
     return v.address;
   }
 
-  public disableAddressLink(v: ApiCoin): boolean {
-    const address: string = this.getAddress(v);
-    return address === 'Unparsed address' ||
-      address === 'LelantusMint' ||
-      address === 'LelantusJMint' ||
-      address === 'LelantusJoinSplit' ||
-      address === 'Sigmamint' ||
-      address === 'Sigmaspend';
-  }
-
   public getConfirmations() {
     this.txProvider
       .getConfirmations(this.tx.blockheight, this.chainNetwork)

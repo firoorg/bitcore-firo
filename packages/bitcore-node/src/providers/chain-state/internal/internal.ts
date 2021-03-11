@@ -41,6 +41,7 @@ import {
 import { TransactionJSON } from '../../../types/Transaction';
 import { StringifyJsonStream } from '../../../utils/stringifyJsonStream';
 import { ListTransactionsStream } from './transforms';
+import { ChainNetwork } from '../../../types/ChainNetwork';
 
 @LoggifyClass
 export class InternalStateProvider implements IChainStateService {
@@ -94,7 +95,14 @@ export class InternalStateProvider implements IChainStateService {
       spentHeight: { $lt: SpentHeightIndicators.minimum },
       mintHeight: { $gt: SpentHeightIndicators.conflicting }
     };
+    if (address == "Sigmaspend") {
+      delete query.spentHeight;
+    }
     let balance = await CoinStorage.getBalance({ query });
+    if (address == "Sigmaspend") {
+      balance.balance = -balance.balance;
+      balance.confirmed = -balance.confirmed;
+    }
     return balance;
   }
 
@@ -648,4 +656,16 @@ export class InternalStateProvider implements IChainStateService {
       .addCursorFlag('noCursorTimeout', true)
       .toArray();
   }
+
+  async getInfo(params: ChainNetwork) {
+    const { chain, network } = params;
+    const cacheKey = `getInfo-${chain}-${network}`;
+    return CacheStorage.getGlobalOrRefresh(
+      cacheKey,
+      async () => {
+        return this.getRPC(chain, network).getInfo();
+      },
+      5 * CacheStorage.Times.Minute
+    );
+  } 
 }

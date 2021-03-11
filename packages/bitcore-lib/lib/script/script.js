@@ -126,6 +126,8 @@ Script.prototype.toBuffer = function() {
       } else if (opcodenum === Opcode.OP_PUSHDATA4) {
         bw.writeUInt32LE(chunk.len);
         bw.write(chunk.buf);
+      } else {
+        bw.write(chunk.buf);
       }
     }
   }
@@ -615,9 +617,9 @@ Script.types.ZERO_COIN_MINT = 'Zeromint';
 Script.types.ZERO_COIN_SPEND = 'Zerospend';
 Script.types.SIGMA_MINT = 'Sigmamint';
 Script.types.SIGMA_SPEND = 'Sigmaspend';
-Script.types.LELANTUS_MINT = 'LelantusMint';
-Script.types.LELANTUS_JMINT = 'LelantusJMint';
-Script.types.LELANTUS_JOIN_SPLIT = 'LelantusJoinSplit';
+Script.types.LELANTUS_MINT = 'Lelantusmint';
+Script.types.LELANTUS_JMINT = 'Lelantusjmint';
+Script.types.LELANTUS_JOIN_SPLIT = 'Lelantusjsplit';
 
 Script.OP_RETURN_STANDARD_SIZE = 80;
 

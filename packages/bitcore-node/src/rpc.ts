@@ -105,6 +105,10 @@ export class RPC {
   async getEstimateFee() {
     return this.asyncCall('estimatefee', []);
   }
+
+  async getInfo() {
+    return this.asyncCall('getinfo', []);
+  }
 }
 
 @LoggifyClass

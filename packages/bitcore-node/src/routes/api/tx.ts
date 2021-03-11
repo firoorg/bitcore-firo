@@ -25,7 +25,7 @@ router.get('/', function(req, res) {
     network,
     req,
     res,
-    args: { limit, since, direction, paging }
+    args: { limit, since, direction, paging, sort: { txIndex: direction ? Number(direction) : 1 } }
   };
 
   if (blockHeight !== undefined) {

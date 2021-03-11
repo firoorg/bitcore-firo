@@ -100,6 +100,7 @@ export interface TxOp {
         value: number;
         wallets: Array<ObjectID>;
         mempoolTime?: Date;
+        txIndex: number,
       };
       $setOnInsert?: TxOp['updateOne']['update']['$set'];
     };
@@ -351,7 +352,9 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
       }, {});
 
       let txBatch = new Array<TxOp>();
+      let txIndex: number = -1;
       for (let tx of params.txs) {
+        ++txIndex;
         const txid = tx._hash!;
         const spent = groupedSpends[txid] || {};
         const mintedWallets = tx.wallets || [];
@@ -372,6 +375,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
             filter: { txid, chain, network },
             update: {
               $set: {
+                txIndex,
                 chain,
                 network,
                 blockHeight: height,
@@ -599,7 +603,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
                   chain,
                   network,
                   address: inputObj.bitcoinScript ? inputObj.bitcoinScript.classify() : '',
-                  mintHeight: height,
+                  mintHeight: 0,
                   mintIndex: inputIndex,
                   spentTxid: tx._hash,
                   coinbase: false,
@@ -607,7 +611,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
                   script: inputObj.bitcoinScript ? inputObj.bitcoinScript.toBuffer() : Buffer.from([])
                 },
                 $setOnInsert: {
-                  spentHeight: SpentHeightIndicators.unspent,
+                  spentHeight: height,
                   wallets: []
                 }
               },
