@@ -88,6 +88,20 @@ export class InternalStateProvider implements IChainStateService {
 
   async getBalanceForAddress(params: GetBalanceForAddressParams) {
     const { chain, network, address } = params;
+    if (address === "Lelantusjsplit") {
+      const splitTxIds: string[] = (await CoinStorage.collection.aggregate<{ _id: string }>([
+        { $match: { chain, network, address: 'Lelantusjsplit', spentTxid: { $ne: null } } },
+        { $group: { _id: '$spentTxid' } }
+      ]).toArray()).map(v => v._id);
+      let totalSplit: number = 0;
+      for (let i = 0; i < splitTxIds.length; ++i) {
+        const foundTransaction = (await TransactionStorage.collection.findOne({ chain, network, txid: splitTxIds[i] }));
+        if (foundTransaction) {
+          totalSplit += foundTransaction.value;
+        }
+      }
+      return { balance: -totalSplit, confirmed: -totalSplit, unconfirmed: 0 };
+    }
     const query = {
       chain,
       network,
@@ -95,7 +109,7 @@ export class InternalStateProvider implements IChainStateService {
       spentHeight: { $lt: SpentHeightIndicators.minimum },
       mintHeight: { $gt: SpentHeightIndicators.conflicting }
     };
-    if (address == "Sigmaspend") {
+    if (address === "Sigmaspend") {
       delete query.spentHeight;
     }
     let balance = await CoinStorage.getBalance({ query });
@@ -659,13 +673,21 @@ export class InternalStateProvider implements IChainStateService {
 
   async getInfo(params: ChainNetwork) {
     const { chain, network } = params;
-    const cacheKey = `getInfo-${chain}-${network}`;
-    return CacheStorage.getGlobalOrRefresh(
-      cacheKey,
-      async () => {
-        return this.getRPC(chain, network).getInfo();
-      },
-      5 * CacheStorage.Times.Minute
-    );
-  } 
+    return this.getRPC(chain, network).asyncCall('getinfo', []);
+  }
+  
+  async getBlockchainInfo(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).asyncCall('getblockchaininfo', []);
+  }
+
+  async getSpork(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).asyncCall('spork', ["list"]);
+  }
+
+  async getBestBlockHash(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).getBestBlockHash();
+  }
 }

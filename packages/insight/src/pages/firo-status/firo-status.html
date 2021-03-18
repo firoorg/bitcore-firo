@@ -1,0 +1,205 @@
+<head-nav [chainNetwork]="chainNetwork"></head-nav>
+<ion-content class="content-container">
+  <ion-grid class="page-content-grid">
+
+    <loader *ngIf="loading" [type]="'title'"></loader>
+    
+    <div *ngIf="!loading" class="page-content">
+      <h1 class="content-container--heading">Application Status</h1>
+      <br/>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col style="padding-right: 20px;" col-12 col-sm-6 col-md-8>
+            <h3 class="sub-title">Sync Status</h3>
+            <ion-grid class="grid--table status-container">
+              <div class="status-container__rows">
+                <ion-row>
+                  <ion-col>
+                    Sync Progress
+                  </ion-col>
+                  <ion-col>
+                    <div class="progress">
+                      <div class="progress-bar" [style.width]="syncPercent + '%'">
+                        <ng-container *ngIf="syncPercent > 0">{{ syncPercent }}% Complete</ng-container>
+                      </div>
+                    </div>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Sync Status
+                  </ion-col>
+                  <ion-col>
+                    {{ syncPercent >= 100 ? 'finished' : 'syncing' }}
+                  </ion-col>
+                </ion-row>
+              </div>
+            </ion-grid>
+            <br />
+            <ng-container *ngIf="status.spork && status.spork.blockchain && status.spork.blockchain.length > 0">
+              <h3 class="sub-title">Blockchain Sporks</h3>
+              <ion-grid class="grid--table status-container">
+                <ion-row>
+                  <ion-col>
+                    Feature
+                  </ion-col>
+                  <ion-col>
+                    Height
+                  </ion-col>
+                  <ion-col>
+                    Parameter
+                  </ion-col>
+                </ion-row>
+                <div class="status-container__rows">
+                  <ion-row *ngFor="let data of status.spork.blockchain">
+                    <ion-col>
+                      {{ data.feature }}
+                    </ion-col>
+                    <ion-col>
+                      {{ data.enableAtHeight }}
+                    </ion-col>
+                    <ion-col>
+                      {{ data.parameter }}
+                    </ion-col>
+                  </ion-row>
+                </div>
+              </ion-grid>
+            </ng-container>
+            <br />
+            <ng-container *ngIf="status.spork && status.spork.mempool && status.spork.mempool.length > 0">
+              <h3 class="sub-title">Mempool Sporks</h3>
+              <ion-grid class="grid--table status-container">
+                <ion-row>
+                  <ion-col>
+                    Feature
+                  </ion-col>
+                  <ion-col>
+                    Height
+                  </ion-col>
+                  <ion-col>
+                    Parameter
+                  </ion-col>
+                </ion-row>
+                <div class="status-container__rows">
+                  <ion-row *ngFor="let data of status.spork.mempool">
+                    <ion-col>
+                      {{ data.feature }}
+                    </ion-col>
+                    <ion-col>
+                      {{ data.enableAtHeight }}
+                    </ion-col>
+                    <ion-col>
+                      {{ data.parameter }}
+                    </ion-col>
+                  </ion-row>
+                </div>
+              </ion-grid>
+            </ng-container>
+            <br />
+            <h3 class="sub-title">Last Block</h3>
+            <ion-grid class="grid--table status-container">
+              <div class="status-container__rows">
+                <ion-row>
+                  <ion-col col-4>
+                    Last Block Hash (firod)
+                  </ion-col>
+                  <ion-col col-8 class="no-overflow">
+                    <ion-note item-end>
+                      <a (click)="goToBlock(status.blockchainInfo.bestblockhash)">{{ status.blockchainInfo.bestblockhash }}</a>
+                    </ion-note>
+                  </ion-col>
+                </ion-row>
+              </div>
+            </ion-grid>
+          </ion-col>
+          <ion-col col-12 col-sm-6 col-md-4>
+            <h3 class="sub-title">FIRO node information</h3>
+            <ion-grid class="grid--table status-container">
+              <div class="status-container__rows">
+                <ion-row>
+                  <ion-col>
+                    Version
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.version }}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Protocol version
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.protocolversion }}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Blocks
+                  </ion-col>
+                  <ion-col>
+                    <ion-note item-end>
+                      <a (click)="goToBlock(status.info.blocks)">{{ status.info.blocks }}</a>
+                    </ion-note>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Time Offset
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.timeoffset }}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Connections to other nodes
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.connections }}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Mining Difficulty
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.difficulty }}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Network
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.network }}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Proxy setting
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.proxy }}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    Info Errors
+                  </ion-col>
+                  <ion-col>
+                    {{ status.info.infoErrors }}
+                  </ion-col>
+                </ion-row>
+              </div>
+            </ion-grid>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <error [message]="errorMessage" *ngIf="!loading && errorMessage"></error>
+
+  </ion-grid>
+</ion-content>
+<footer [chainNetwork]="chainNetwork"></footer>

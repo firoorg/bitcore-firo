@@ -179,6 +179,10 @@ export interface IChainStateService {
   getLocalTip(params): Promise<IBlock | null>;
   getLocatorHashes(params): Promise<any>;
   isValid(params: isValidParams): { isValid: boolean; type: string };
+  getInfo(params: ChainNetwork);
+  getBlockchainInfo(params: ChainNetwork);
+  getSpork(params: ChainNetwork);
+  getBestBlockHash(params: ChainNetwork);
 }
 
 export interface ChainStateServices {

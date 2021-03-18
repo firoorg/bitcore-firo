@@ -19,6 +19,32 @@
   </ion-row>
 </ion-list>
 
+<ion-list no-lines *ngIf="api.networkSettings.selectedNetwork.chain==='FIRO'">
+  <ion-row>
+    <ion-item-divider>
+      More
+    </ion-item-divider>
+
+    <ion-item (click)="openStatus(api.networkSettings.selectedNetwork)">
+      <ion-avatar item-start>
+        <img src=" assets/img/firo-status-icon.svg" class="logo" />
+      </ion-avatar>
+      <ion-label color="dark">
+        Status
+      </ion-label>
+    </ion-item>
+
+    <ion-item (click)="openLelantusStatus(api.networkSettings.selectedNetwork)">
+      <ion-avatar item-start>
+        <img src=" assets/img/lelantus-status-icon.svg" class="logo" />
+      </ion-avatar>
+      <ion-label color="dark">
+        Lelantus
+      </ion-label>
+    </ion-item>
+  </ion-row>
+</ion-list>
+
 <ion-list radio-group [(ngModel)]="currencySymbol" *ngIf="showUnits && api.networkSettings.selectedNetwork.chain !== 'ALL'">
   <ion-item-divider>
     Units

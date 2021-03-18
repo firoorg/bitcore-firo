@@ -141,5 +141,21 @@ class ChainStateProxy implements IChainStateProvider {
   isValid(params) {
     return this.get(params).isValid(params);
   }
+
+  async getInfo(params) {
+    return this.get(params).getInfo(params);
+  }
+
+  async getBlockchainInfo(params) {
+    return this.get(params).getBlockchainInfo(params);
+  }
+
+  async getSpork(params) {
+    return this.get(params).getSpork(params);
+  }
+
+  async getBestBlockHash(params) {
+    return this.get(params).getBestBlockHash(params);
+  }
 }
 export let ChainStateProvider = new ChainStateProxy();
