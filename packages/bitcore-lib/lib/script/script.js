@@ -97,10 +97,11 @@ Script.fromBuffer = function(buffer) {
         });
       }
     } catch (e) {
-      if (e instanceof RangeError) {
+      return new Script({ chunks: [{ buf: buffer.slice(1), len: buffer.length - 1, opcodenum: buffer[0] }] });
+      /*if (e instanceof RangeError) {
         throw new errors.Script.InvalidBuffer(buffer.toString('hex'));
       }
-      throw e;
+      throw e;*/
     }
   }
 

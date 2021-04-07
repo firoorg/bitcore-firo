@@ -183,6 +183,7 @@ export interface IChainStateService {
   getBlockchainInfo(params: ChainNetwork);
   getSpork(params: ChainNetwork);
   getBestBlockHash(params: ChainNetwork);
+  getTotalSupply(params: ChainNetwork);
 }
 
 export interface ChainStateServices {

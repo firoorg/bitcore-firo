@@ -157,5 +157,8 @@ class ChainStateProxy implements IChainStateProvider {
   async getBestBlockHash(params) {
     return this.get(params).getBestBlockHash(params);
   }
+  async getTotalSupply(params) {
+    return this.get(params).getTotalSupply(params);
+  }
 }
 export let ChainStateProvider = new ChainStateProxy();

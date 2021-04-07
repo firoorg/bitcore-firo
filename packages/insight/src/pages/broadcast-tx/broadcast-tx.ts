@@ -53,14 +53,18 @@ export class BroadcastTxPage {
 
   public send(): void {
     const postData: any = {
-      rawtx: this.transaction
+      rawTx: this.transaction
     };
 
     this.httpClient
       .post(this.apiProvider.getUrl(this.chainNetwork) + '/tx/send', postData)
       .subscribe(
-        response => {
-          this.presentToast(true, response);
+        (response: any) => {
+          if (response.error) {
+            this.presentToast(false, response.error);
+          } else {
+            this.presentToast(true, response);
+          }
         },
         err => {
           this.presentToast(false, err);

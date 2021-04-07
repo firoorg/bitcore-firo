@@ -90,6 +90,24 @@ export class SearchProvider {
         { chain: 'ETH', network: 'testnet' }
       ],
     },
+    // FIRO Address
+    {
+      regexes: [/^(firo:)?([^T][a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend)$/],
+      dataIndex: 2,
+      type: 'address',
+      chainNetworks: [
+        { chain: 'FIRO', network: 'mainnet' }
+      ],
+    },
+    // FIRO testnet Address
+    {
+      regexes: [/^(firotest:)?(T[a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend)$/],
+      dataIndex: 2,
+      type: 'address',
+      chainNetworks: [
+        { chain: 'FIRO', network: 'testnet' }
+      ],
+    },
     // Doge Address
     {
       regexes: [/^(dogecoin:)?(D[5-9A-HJ-NP-U][1-9A-HJ-NP-Za-km-z]{32})/],
@@ -104,9 +122,11 @@ export class SearchProvider {
       regexes: [/^[A-Fa-f0-9]{64}$/],
       type: 'blockOrTx',
       chainNetworks: [
+        { chain: 'FIRO', network: 'mainnet' },
         { chain: 'BTC', network: 'mainnet' },
         { chain: 'BCH', network: 'mainnet' },
         { chain: 'DOGE', network: 'mainnet' },
+        { chain: 'FIRO', network: 'testnet' },
         { chain: 'BTC', network: 'testnet' },
         { chain: 'BCH', network: 'testnet' },
         { chain: 'DOGE', network: 'testnet' }
@@ -126,10 +146,12 @@ export class SearchProvider {
       regexes: [/^[0-9]{1,9}$/],
       type: 'block',
       chainNetworks: [
+        { chain: 'FIRO', network: 'mainnet' },
         { chain: 'BTC', network: 'mainnet' },
         { chain: 'BCH', network: 'mainnet' },
         { chain: 'DOGE', network: 'mainnet' },
         { chain: 'ETH', network: 'mainnet' },
+        { chain: 'FIRO', network: 'testnet' },
         { chain: 'BTC', network: 'testnet' },
         { chain: 'BCH', network: 'testnet' },
         { chain: 'DOGE', network: 'testnet' },
@@ -165,9 +187,13 @@ export class SearchProvider {
           this.searchTx(search.input).catch(err => Observable.of(err))
         );
       } else if (search.type === 'address') {
-        searchArray.push(
-          this.searchAddr(search.input).catch(err => Observable.of(err))
-        );
+        if (search.input === "Lelantus" || search.input === "Sigma") {
+          searchArray.push(Observable.from([{ addr: [{ address: search.input, chain: search.chainNetwork.chain, network: search.chainNetwork.network }] }]));
+        } else {
+          searchArray.push(
+            this.searchAddr(search.input).catch(err => Observable.of(err))
+          );
+        }
       }
     });
     return Observable.forkJoin(searchArray);

@@ -690,4 +690,8 @@ export class InternalStateProvider implements IChainStateService {
     const { chain, network } = params;
     return this.getRPC(chain, network).getBestBlockHash();
   }
+  async getTotalSupply(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).asyncCall('gettotalsupply', []);
+  }
 }

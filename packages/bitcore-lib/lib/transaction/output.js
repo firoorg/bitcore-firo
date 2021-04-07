@@ -42,9 +42,6 @@ Object.defineProperty(Output.prototype, 'script', {
       return this._script;
     } else {
       this.setScriptFromBuffer(this._scriptBuffer);
-      if (this._script == null) {
-        this._script = new Script({ chunks: [{ buf: this._scriptBuffer.slice(1), len: this._scriptBuffer.length - 1, opcodenum: this._scriptBuffer[0] }] });
-      }
       return this._script;
     }
 
