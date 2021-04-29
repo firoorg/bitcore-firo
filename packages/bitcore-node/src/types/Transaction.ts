@@ -14,4 +14,13 @@ export interface TransactionJSON {
   inputCount: number;
   outputCount: number;
   value: number;
+  extraPayload?: {
+    proReg?: any,
+    proUpServ?: any,
+    proUpReg?: any,
+    proUpRev?: any,
+    cbTx?: any,
+    finalCommitment?: any,
+    sporkTx?: any
+  }
 }

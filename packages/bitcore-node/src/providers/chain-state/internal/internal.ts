@@ -255,6 +255,58 @@ export class InternalStateProvider implements IChainStateService {
         confirmations = tipHeight - found.blockHeight + 1;
       }
       const convertedTx = TransactionStorage._apiTransform(found, { object: true }) as TransactionJSON;
+      // handle extra payload for Firo
+      if (found.version) {
+        const txVersion: number = (found.version & 0xffff);
+        const txType: number = (found.version >> 16) & 0xffff;
+        if (txVersion >= 3 && txType >= 1 && txType <= 7) {
+          const rawTx: any = await this.getRPC(chain, network).getTransaction(txId);
+          switch (txType) {
+            case 1:
+              //TRANSACTION_PROVIDER_REGISTER
+              if (rawTx.proReg) {
+                convertedTx.extraPayload = { proReg: rawTx.proReg };
+              }
+              break;
+            case 2:
+              //TRANSACTION_PROVIDER_UPDATE_SERVICE
+              if (rawTx.proUpServ) {
+                convertedTx.extraPayload = { proUpServ: rawTx.proUpServ };
+              }
+              break;
+            case 3:
+              //TRANSACTION_PROVIDER_UPDATE_REGISTRAR
+              if (rawTx.proUpReg) {
+                convertedTx.extraPayload = { proUpReg: rawTx.proUpReg };
+              }
+              break;
+            case 4:
+              //TRANSACTION_PROVIDER_UPDATE_REVOKE
+              if (rawTx.proUpRev) {
+                convertedTx.extraPayload = { proUpRev: rawTx.proUpRev };
+              }
+              break;
+            case 5:
+              //TRANSACTION_COINBASE
+              if (rawTx.cbTx) {
+                convertedTx.extraPayload = { cbTx: rawTx.cbTx };
+              }
+              break;
+            case 6:
+              //TRANSACTION_QUORUM_COMMITMENT
+              if (rawTx.finalCommitment) {
+                convertedTx.extraPayload = { finalCommitment: rawTx.finalCommitment };
+              }
+              break;
+            case 7:
+              //TRANSACTION_SPORK
+              if (rawTx.sporkTx) {
+                convertedTx.extraPayload = { sporkTx: rawTx.sporkTx };
+              }
+              break;
+          }
+        }
+      }
       return { ...convertedTx, confirmations } as any;
     } else {
       return undefined;

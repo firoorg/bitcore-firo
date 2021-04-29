@@ -19,12 +19,14 @@ import { TxsProvider } from '../../providers/transactions/transactions';
 export class TransactionPage {
   public loading = true;
   public tx: any = {};
+  public extraPayload: any = null;
   public vout: number;
   public fromVout: boolean;
   public confirmations: number;
   public errorMessage: string;
   public chainNetwork: ChainNetwork;
   public prevPage: string;
+  public extraPayloadExpanded = false;
   private txId: string;
 
   constructor(
@@ -67,6 +69,7 @@ export class TransactionPage {
           tx = this.txProvider.toEthAppTx(response);
         }
         this.tx = tx;
+        this.extraPayload = tx.extraPayload;
         this.loading = false;
         this.txProvider
           .getConfirmations(this.tx.blockheight, this.chainNetwork)
@@ -89,6 +92,22 @@ export class TransactionPage {
   public goToBlock(blockHash: string): void {
     this.redirProvider.redir('block-detail', {
       blockHash,
+      chain: this.chainNetwork.chain,
+      network: this.chainNetwork.network
+    });
+  }
+
+  public goToTx(txId: string): void {
+    this.redirProvider.redir('transaction', {
+      txId,
+      chain: this.chainNetwork.chain,
+      network: this.chainNetwork.network,
+    });
+  }
+
+  public goToAddress(addrStr: string): void {
+    this.redirProvider.redir('address', {
+      addrStr,
       chain: this.chainNetwork.chain,
       network: this.chainNetwork.network
     });

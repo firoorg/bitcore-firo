@@ -32,4 +32,5 @@ export interface BitcoinTransactionType {
   inputs: BitcoinInput[];
   toBuffer: () => Buffer;
   nLockTime: number;
+  version?: number;
 }

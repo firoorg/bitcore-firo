@@ -388,7 +388,7 @@ Transaction.prototype.fromBufferReader = function(reader) {
   }
 
   this.nLockTime = reader.readUInt32LE();
-  if ((this.version & 0xffff) == 3 && ((this.version >> 16) & 0xffff) != 0) {
+  if ((this.version & 0xffff) >= 3 && ((this.version >> 16) & 0xffff) != 0) {
     var extraSize = reader.readVarintNum();
     this.extraFiroData = reader.read(extraSize);
   }

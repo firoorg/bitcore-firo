@@ -101,6 +101,7 @@ export interface TxOp {
         wallets: Array<ObjectID>;
         mempoolTime?: Date;
         txIndex: number,
+        version?: number;
       };
       $setOnInsert?: TxOp['updateOne']['update']['$set'];
     };
@@ -369,13 +370,14 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
             logger.debug('negative fee', txid, groupedSpends[txid], tx.outputAmount);
           }
         }
-
+        
         txBatch.push({
           updateOne: {
             filter: { txid, chain, network },
             update: {
               $set: {
                 txIndex,
+                version: tx.version,
                 chain,
                 network,
                 blockHeight: height,
