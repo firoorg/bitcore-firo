@@ -69,6 +69,7 @@ Input.prototype._fromObject = function(params) {
   this.output = params.output ?
     (params.output instanceof Output ? params.output : new Output(params.output)) : undefined;
   this.prevTxId = prevTxId || params.txidbuf;
+  this.classifier = params.classifier;
   this.outputIndex = _.isUndefined(params.outputIndex) ? params.txoutnum : params.outputIndex;
   this.sequenceNumber = _.isUndefined(params.sequenceNumber) ?
     (_.isUndefined(params.seqnum) ? DEFAULT_SEQNUMBER : params.seqnum) : params.sequenceNumber;
@@ -85,13 +86,27 @@ Input.prototype.toObject = Input.prototype.toJSON = function toObject() {
     outputIndex: this.outputIndex,
     sequenceNumber: this.sequenceNumber,
     script: this._scriptBuffer.toString('hex'),
+    isNotTxOutput: this.classifier == Script.types.LELANTUS_JOIN_SPLIT || this.classifier == Script.types.SIGMA_SPEND || this.classifier == Script.types.ZERO_COIN_SPEND
   };
   // add human readable form if input contains valid script
   if (this.script) {
     obj.scriptString = this.script.toString();
+    obj.bitcoinScript = this.script;
   }
   if (this.output) {
     obj.output = this.output.toObject();
+  }
+  // calculated input value for sigma spend
+  if (this.classifier == Script.types.SIGMA_SPEND) {
+    obj.inputValue = 0;
+    try {
+      const encodedValue = obj.script.substr(obj.script.length - 278, 16);
+      let hexValue = "";
+      for (let i = 14; i >= 0; i -= 2){
+        hexValue += encodedValue.substr(i, 2);
+        obj.inputValue = Number.parseInt(hexValue, 16);
+      }
+    } catch (error) { }
   }
   return obj;
 };
@@ -104,6 +119,7 @@ Input.fromBufferReader = function(br) {
   input.sequenceNumber = br.readUInt32LE();
   // TODO: return different classes according to which input it is
   // e.g: CoinbaseInput, PublicKeyHashInput, MultiSigScriptHashInput, etc.
+  input.classifier = Script.fromBuffer(input._scriptBuffer).classifyInput();
   return input;
 };
 
@@ -216,9 +232,10 @@ Input.prototype.isValidSignature = function(transaction, signature, signingMetho
 /**
  * @returns true if this is a coinbase input (represents no input)
  */
-Input.prototype.isNull = function() {
+Input.prototype.isNull = function () {
   return this.prevTxId.toString('hex') === '0000000000000000000000000000000000000000000000000000000000000000' &&
-    this.outputIndex === 0xffffffff;
+    this.outputIndex === 0xffffffff &&
+    this.classifier == Script.types.UNKNOWN;
 };
 
 Input.prototype._estimateSize = function() {

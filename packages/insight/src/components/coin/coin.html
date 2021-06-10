@@ -27,9 +27,12 @@
         </ion-label>
       </ion-chip>
       <ion-chip item-end color="default" class="size-fixed">
-        <ion-label>
+        <ion-label *ngIf="!coin.isHidden">
           {{ currencyProvider.getConvertedNumber(coin.value, chainNetwork.chain) | number:'1.0-8' }}
           {{ currencyProvider.currencySymbol }}
+        </ion-label>
+        <ion-label *ngIf="coin.isHidden">
+          Hidden
         </ion-label>
       </ion-chip>
     </ion-col>
@@ -79,9 +82,12 @@
         </ion-label>
       </ion-chip>
       <ion-chip item-end class="size-fixed">
-        <ion-label color="danger">
+        <ion-label color="danger" *ngIf="!coin.isHidden">
           - {{ currencyProvider.getConvertedNumber(coin.value, chainNetwork.chain) | number:'1.0-8' }}
           {{ currencyProvider.currencySymbol }}
+        </ion-label>
+        <ion-label color="danger" *ngIf="coin.isHidden">
+          Hidden
         </ion-label>
       </ion-chip>
     </ion-col>

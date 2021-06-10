@@ -41,6 +41,7 @@ import {
 import { TransactionJSON } from '../../../types/Transaction';
 import { StringifyJsonStream } from '../../../utils/stringifyJsonStream';
 import { ListTransactionsStream } from './transforms';
+import { ChainNetwork } from '../../../types/ChainNetwork';
 
 @LoggifyClass
 export class InternalStateProvider implements IChainStateService {
@@ -87,6 +88,20 @@ export class InternalStateProvider implements IChainStateService {
 
   async getBalanceForAddress(params: GetBalanceForAddressParams) {
     const { chain, network, address } = params;
+    if (address === "Lelantusjsplit") {
+      const splitTxIds: string[] = (await CoinStorage.collection.aggregate<{ _id: string }>([
+        { $match: { chain, network, address: 'Lelantusjsplit', spentTxid: { $ne: null } } },
+        { $group: { _id: '$spentTxid' } }
+      ]).toArray()).map(v => v._id);
+      let totalSplit: number = 0;
+      for (let i = 0; i < splitTxIds.length; ++i) {
+        const foundTransaction = (await TransactionStorage.collection.findOne({ chain, network, txid: splitTxIds[i] }));
+        if (foundTransaction) {
+          totalSplit += foundTransaction.value;
+        }
+      }
+      return { balance: -totalSplit, confirmed: -totalSplit, unconfirmed: 0 };
+    }
     const query = {
       chain,
       network,
@@ -94,7 +109,14 @@ export class InternalStateProvider implements IChainStateService {
       spentHeight: { $lt: SpentHeightIndicators.minimum },
       mintHeight: { $gt: SpentHeightIndicators.conflicting }
     };
+    if (address === "Sigmaspend") {
+      delete query.spentHeight;
+    }
     let balance = await CoinStorage.getBalance({ query });
+    if (address == "Sigmaspend") {
+      balance.balance = -balance.balance;
+      balance.confirmed = -balance.confirmed;
+    }
     return balance;
   }
 
@@ -233,6 +255,58 @@ export class InternalStateProvider implements IChainStateService {
         confirmations = tipHeight - found.blockHeight + 1;
       }
       const convertedTx = TransactionStorage._apiTransform(found, { object: true }) as TransactionJSON;
+      // handle extra payload for Firo
+      if (found.version) {
+        const txVersion: number = (found.version & 0xffff);
+        const txType: number = (found.version >> 16) & 0xffff;
+        if (txVersion >= 3 && txType >= 1 && txType <= 7) {
+          const rawTx: any = await this.getRPC(chain, network).getTransaction(txId);
+          switch (txType) {
+            case 1:
+              //TRANSACTION_PROVIDER_REGISTER
+              if (rawTx.proReg) {
+                convertedTx.extraPayload = { proReg: rawTx.proReg };
+              }
+              break;
+            case 2:
+              //TRANSACTION_PROVIDER_UPDATE_SERVICE
+              if (rawTx.proUpServ) {
+                convertedTx.extraPayload = { proUpServ: rawTx.proUpServ };
+              }
+              break;
+            case 3:
+              //TRANSACTION_PROVIDER_UPDATE_REGISTRAR
+              if (rawTx.proUpReg) {
+                convertedTx.extraPayload = { proUpReg: rawTx.proUpReg };
+              }
+              break;
+            case 4:
+              //TRANSACTION_PROVIDER_UPDATE_REVOKE
+              if (rawTx.proUpRev) {
+                convertedTx.extraPayload = { proUpRev: rawTx.proUpRev };
+              }
+              break;
+            case 5:
+              //TRANSACTION_COINBASE
+              if (rawTx.cbTx) {
+                convertedTx.extraPayload = { cbTx: rawTx.cbTx };
+              }
+              break;
+            case 6:
+              //TRANSACTION_QUORUM_COMMITMENT
+              if (rawTx.finalCommitment) {
+                convertedTx.extraPayload = { finalCommitment: rawTx.finalCommitment };
+              }
+              break;
+            case 7:
+              //TRANSACTION_SPORK
+              if (rawTx.sporkTx) {
+                convertedTx.extraPayload = { sporkTx: rawTx.sporkTx };
+              }
+              break;
+          }
+        }
+      }
       return { ...convertedTx, confirmations } as any;
     } else {
       return undefined;
@@ -647,5 +721,29 @@ export class InternalStateProvider implements IChainStateService {
       .find(query)
       .addCursorFlag('noCursorTimeout', true)
       .toArray();
+  }
+
+  async getInfo(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).asyncCall('getinfo', []);
+  }
+  
+  async getBlockchainInfo(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).asyncCall('getblockchaininfo', []);
+  }
+
+  async getSpork(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).asyncCall('spork', ["list"]);
+  }
+
+  async getBestBlockHash(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).getBestBlockHash();
+  }
+  async getTotalSupply(params: ChainNetwork) {
+    const { chain, network } = params;
+    return this.getRPC(chain, network).asyncCall('gettotalsupply', []);
   }
 }

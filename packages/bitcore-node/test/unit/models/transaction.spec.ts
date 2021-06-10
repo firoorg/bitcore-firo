@@ -86,6 +86,7 @@ describe('Transaction Model', function() {
     const CURRENT_HEIGHT = 8534;
 
     const spentStream = new Readable({ objectMode: true, read: () => {} });
+    const newMintsStream = new Readable({ objectMode: true, read: () => {} });
     const done = new Promise(r =>
       spentStream
         .on('data', (spentOps: SpendOp[]) => {
@@ -103,7 +104,8 @@ describe('Transaction Model', function() {
       network: 'regtest',
       txs: [tx],
       height: CURRENT_HEIGHT,
-      spentStream
+      spentStream,
+      newMintsStream
     });
     await done;
     expect(batches).to.eq(1);

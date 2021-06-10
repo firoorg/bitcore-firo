@@ -39,7 +39,21 @@ export class InsightApp {
 
   public subscribeRedirEvent() {
     this.events.subscribe('redirToEvent', data => {
-      this.nav.push(data.redirTo, data.params);
+      let id: string = null;
+      if (data.params) {
+        if (data.params.txId) {
+          id = data.params.txId;
+        } else {
+          if (data.params.blockHash) {
+            id = data.params.blockHash;
+          }
+        }
+      }
+      if (id) {
+        this.nav.push(data.redirTo, data.params, { id });
+      } else {
+        this.nav.push(data.redirTo, data.params);
+      }
     });
   }
 }

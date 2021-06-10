@@ -338,6 +338,10 @@ Transaction.prototype.toBufferWriter = function(writer, noWitness) {
   }
 
   writer.writeUInt32LE(this.nLockTime);
+  if (this.extraFiroData) {
+    writer.writeVarintNum(this.extraFiroData.length);
+    writer.write(this.extraFiroData);
+  }
   return writer;
 };
 
@@ -384,6 +388,11 @@ Transaction.prototype.fromBufferReader = function(reader) {
   }
 
   this.nLockTime = reader.readUInt32LE();
+  if ((this.version & 0xffff) >= 3 && ((this.version >> 16) & 0xffff) != 0) {
+    var extraSize = reader.readVarintNum();
+    this.extraFiroData = reader.read(extraSize);
+  }
+
   return this;
 };
 
@@ -404,6 +413,9 @@ Transaction.prototype.toObject = Transaction.prototype.toJSON = function toObjec
     outputs: outputs,
     nLockTime: this.nLockTime
   };
+  if (this.extraFiroData) {
+    obj.extraFiroData = this.extraFiroData;
+  }
   if (this._changeScript) {
     obj.changeScript = this._changeScript.toString();
   }
@@ -459,6 +471,9 @@ Transaction.prototype.fromObject = function fromObject(arg, opts) {
     this._fee = transaction.fee;
   }
   this.nLockTime = transaction.nLockTime;
+  if (transaction.extraFiroData) {
+    this.extraFiroData = transaction.extraFiroData;
+  }
   this.version = transaction.version;
   this._checkConsistency(arg);
   return this;

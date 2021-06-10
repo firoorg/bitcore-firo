@@ -31,6 +31,9 @@ var BlockHeader = function BlockHeader(arg) {
   this.timestamp = info.time;
   this.bits = info.bits;
   this.nonce = info.nonce;
+  if (info.firoMTP) {
+    this.firoMTP = info.firoMTP;
+  }
 
   if (info.hash) {
     $.checkState(
@@ -85,6 +88,9 @@ BlockHeader._fromObject = function _fromObject(data) {
     bits: data.bits,
     nonce: data.nonce
   };
+  if (data.firoMTP) {
+    info.firoMTP = data.firoMTP;
+  }
   return info;
 };
 
@@ -142,6 +148,9 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.time = br.readUInt32LE();
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
+  if (info.version == BlockHeader.Constants.FIRO_MTP_VERSION) {
+    info.firoMTP = br.read(100);
+  }
   return info;
 };
 
@@ -157,8 +166,8 @@ BlockHeader.fromBufferReader = function fromBufferReader(br) {
 /**
  * @returns {Object} - A plain object of the BlockHeader
  */
-BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObject() {
-  return {
+BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObject () {
+  var result = {
     hash: this.hash,
     version: this.version,
     prevHash: BufferUtil.reverse(this.prevHash).toString('hex'),
@@ -167,6 +176,11 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     bits: this.bits,
     nonce: this.nonce
   };
+  if (this.firoMTP) {
+    result.firoMTP = this.firoMTP;
+  }
+
+  return result;
 };
 
 /**
@@ -197,6 +211,9 @@ BlockHeader.prototype.toBufferWriter = function toBufferWriter(bw) {
   bw.writeUInt32LE(this.time);
   bw.writeUInt32LE(this.bits);
   bw.writeUInt32LE(this.nonce);
+  if (this.firoMTP) {
+    bw.write(this.firoMTP);
+  }
   return bw;
 };
 
@@ -290,7 +307,8 @@ BlockHeader.prototype.inspect = function inspect() {
 BlockHeader.Constants = {
   START_OF_HEADER: 8, // Start buffer position in raw block data
   MAX_TIME_OFFSET: 2 * 60 * 60, // The max a timestamp can be in the future
-  LARGEST_HASH: new BN('10000000000000000000000000000000000000000000000000000000000000000', 'hex')
+  LARGEST_HASH: new BN('10000000000000000000000000000000000000000000000000000000000000000', 'hex'),
+  FIRO_MTP_VERSION: 0x20001000
 };
 
 module.exports = BlockHeader;

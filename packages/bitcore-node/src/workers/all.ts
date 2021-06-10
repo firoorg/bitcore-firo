@@ -19,6 +19,9 @@ export const FullClusteredWorker = async () => {
   });
   process.on('SIGTERM', stop);
   process.on('SIGINT', stop);
+  process.on('uncaughtException', function(err) {
+    console.trace(err);
+  });
 
   services.push(Storage, Event);
   if (cluster.isMaster) {

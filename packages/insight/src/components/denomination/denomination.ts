@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import _ from 'lodash';
 import { ApiProvider, ChainNetwork } from '../../providers/api/api';
+import { RedirProvider } from '../../providers/redir/redir';
 @Component({
   selector: 'denomination',
   templateUrl: 'denomination.html'
@@ -15,7 +16,8 @@ export class DenominationComponent {
   constructor(
     public viewCtrl: ViewController,
     public api: ApiProvider,
-    public navParams: NavParams
+    public navParams: NavParams,
+    public redirProvider: RedirProvider
   ) {}
 
   public ionViewDidEnter() {
@@ -47,5 +49,21 @@ export class DenominationComponent {
       chainNetwork,
       currencySymbol: this.currencySymbol
     });
+  }
+
+  public openLelantusStatus(chainNetwork: ChainNetwork): void {
+    this.redirProvider.redir('lelantus-status', {
+      chain: chainNetwork.chain,
+      network: chainNetwork.network
+    });
+    this.viewCtrl.dismiss();
+  }
+
+  public openStatus(chainNetwork: ChainNetwork): void {
+    this.redirProvider.redir('firo-status', {
+      chain: chainNetwork.chain,
+      network: chainNetwork.network
+    });
+    this.viewCtrl.dismiss();
   }
 }

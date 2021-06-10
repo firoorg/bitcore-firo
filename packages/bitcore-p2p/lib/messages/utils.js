@@ -32,13 +32,17 @@ module.exports = utils = {
       bw.write(word);
     }
   },
-  writeAddr: function writeAddr(addr, bw) {
+  writeAddr: function writeAddr(addr, bw, fromVersion) {
     if (_.isUndefined(addr)) {
-      var pad = new Buffer(Array(26));
+      var pad = new Buffer(Array(fromVersion ? 30 : 26));
       bw.write(pad);
       return;
     }
 
+    if (fromVersion) {
+      const tm = new Date();
+      bw.writeUint32(tm.getTime());
+    }
     bw.writeUInt64LEBN(addr.services);
     utils.writeIP(addr.ip, bw);
     bw.writeUInt16BE(addr.port);
@@ -68,7 +72,10 @@ module.exports = utils = {
       v4: ipv4
     };
   },
-  parseAddr: function parseAddr(parser) {
+  parseAddr: function parseAddr (parser, fromVersion) {
+    if (fromVersion) {
+      parser.readUInt32BE();
+    }
     var services = parser.readUInt64LEBN();
     var ip = utils.parseIP(parser);
     var port = parser.readUInt16BE();

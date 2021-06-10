@@ -1,0 +1,97 @@
+<head-nav [chainNetwork]="chainNetwork"></head-nav>
+<ion-content class="content-container">
+  <ion-grid class="page-content-grid">
+
+    <loader *ngIf="loading" [type]="'title'"></loader>
+    
+    <div *ngIf="!loading" class="page-content">
+      <h1 class="content-container--heading">Lelantus Status</h1>
+      <br/>
+      <h3 class="sub-title">Lelantus Tx value breakdown</h3>
+      <ion-grid class="grid--table status-container">
+        <ion-row>
+          <ion-col>
+            <h6>Minted Amount</h6>
+          </ion-col>
+          <ion-col>
+            <h6>Tx #</h6>
+          </ion-col>
+          <ion-col>
+            <h6>Split Amount</h6>
+          </ion-col>
+          <ion-col>
+            <h6>Tx #</h6>
+          </ion-col>
+          <ion-col>
+            <h6>Available Amount</h6>
+          </ion-col>
+        </ion-row>
+        <div class="status-container__rows">
+          <ion-row>
+            <ion-col class="mint-cell">
+              {{ status.totalMint / 100000000 }}
+            </ion-col>
+            <ion-col class="mint-cell">
+              {{ status.mintTxCount }}
+            </ion-col>
+            <ion-col class="split-cell">
+              {{ status.totalSplit / 100000000 }}
+            </ion-col>
+            <ion-col class="split-cell">
+              {{ status.splitTxCount }}
+            </ion-col>
+            <ion-col>
+              {{ (status.totalMint - status.totalSplit) / 100000000 }}
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-grid>
+      <canvas baseChart 
+              [datasets]="chartData"
+              [labels]="chartLabels"
+              [options]="chartOptions"
+              [colors]="chartColors"
+              [legend]="showChartLegend"
+              chartType="bar">
+      </canvas>
+      <br/>
+      <h3 class="sub-title">Sigma denomination breakdown</h3>
+      <ion-grid class="grid--table status-container">
+        <ion-row>
+          <ion-col>
+            <h6>Denom</h6>
+          </ion-col>
+          <ion-col>
+            <h6>Minted</h6>
+          </ion-col>
+          <ion-col>
+            <h6>Spent</h6>
+          </ion-col>
+          <ion-col>
+            <h6>Available</h6>
+          </ion-col>
+        </ion-row>
+        <div class="status-container__rows">
+          <ion-row *ngFor="let denom of sigmaDenoms">
+            <ion-col>
+              {{ denom }}
+            </ion-col>
+            <ion-col>
+              {{ status.sigmaMint[denom * 100000000] }}
+            </ion-col>
+            <ion-col>
+              {{ status.sigmaSpend[denom * 100000000] }}
+            </ion-col>
+            <ion-col>
+              {{ status.sigmaMint[denom * 100000000] - status.sigmaSpend[denom * 100000000] }}
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-grid>
+    </div>
+
+    <error [message]="errorMessage" *ngIf="!loading && errorMessage"></error>
+
+  </ion-grid>
+</ion-content>
+<footer [chainNetwork]="chainNetwork"></footer>

@@ -6,9 +6,9 @@ import { VerificationPeer } from './VerificationPeer';
 export default class BitcoinModule extends BaseModule {
   constructor(services: BaseModule['bitcoreServices']) {
     super(services);
-    services.Libs.register('BTC', 'bitcore-lib', 'bitcore-p2p');
-    services.P2P.register('BTC', BitcoinP2PWorker);
-    services.CSP.registerService('BTC', new BTCStateProvider());
-    services.Verification.register('BTC', VerificationPeer);
+    services.Libs.register('FIRO', 'bitcore-lib', 'bitcore-p2p');
+    services.P2P.register('FIRO', BitcoinP2PWorker);
+    services.CSP.registerService('FIRO', new BTCStateProvider());
+    services.Verification.register('FIRO', VerificationPeer);
   }
 }

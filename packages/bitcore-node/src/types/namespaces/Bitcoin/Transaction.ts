@@ -12,6 +12,9 @@ export interface BitcoinInputObj {
   prevTxId: string;
   outputIndex: number;
   sequenceNumber: number;
+  isNotTxOutput?: boolean;
+  bitcoinScript?: BitcoinScript;
+  inputValue?: number;
 }
 export interface BitcoinInput {
   toObject: () => BitcoinInputObj;
@@ -29,4 +32,5 @@ export interface BitcoinTransactionType {
   inputs: BitcoinInput[];
   toBuffer: () => Buffer;
   nLockTime: number;
+  version?: number;
 }

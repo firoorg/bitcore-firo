@@ -9,6 +9,7 @@ import { BlocksProvider } from '../providers/blocks/blocks';
 import { CurrencyProvider } from '../providers/currency/currency';
 import { DefaultProvider } from '../providers/default/default';
 import { HttpErrorInterceptor } from '../providers/error-handler/error-handler';
+import { FiroProvider } from '../providers/firo/firo';
 import { Logger } from '../providers/logger/logger';
 import { PriceProvider } from '../providers/price/price';
 import { RedirProvider } from '../providers/redir/redir';
@@ -44,7 +45,8 @@ import { InsightApp } from './app.component';
     SearchProvider,
     RedirProvider,
     Logger,
-    AddressProvider
+    AddressProvider,
+    FiroProvider
   ]
 })
 export class AppModule {}

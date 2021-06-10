@@ -41,6 +41,7 @@ export class TransactionListComponent implements OnInit {
     if (this.transactions && this.transactions.length === 0) {
       if (this.queryType === 'blockHash') {
         if (
+          this.chainNetwork.chain === 'FIRO' ||
           this.chainNetwork.chain === 'BTC' ||
           this.chainNetwork.chain === 'BCH' ||
           this.chainNetwork.chain === 'DOGE'
@@ -60,6 +61,7 @@ export class TransactionListComponent implements OnInit {
         const txs: any = [];
 
         if (
+          this.chainNetwork.chain === 'FIRO' ||
           this.chainNetwork.chain === 'BTC' ||
           this.chainNetwork.chain === 'BCH' ||
           this.chainNetwork.chain === 'DOGE'
@@ -109,7 +111,9 @@ export class TransactionListComponent implements OnInit {
       tx.txid = txid;
       tx.vin = inputs.filter(input => input.spentTxid === txid);
       tx.vout = outputs.filter(output => output.mintTxid === txid);
-      tx.blockheight = tx.vout[0].mintHeight;
+      if (tx.vout.length > 0) {
+        tx.blockheight = tx.vout[0].mintHeight;
+      }
       tx.fee = this.txProvider.getFee(tx);
       tx.valueOut = tx.vout
         .filter(output => output.mintTxid === txid)
@@ -126,7 +130,9 @@ export class TransactionListComponent implements OnInit {
       tx.vin = txidCoins.inputs.filter(input => input.spentTxid === txid);
       tx.vout = txidCoins.outputs.filter(output => output.mintTxid === txid);
       tx.fee = this.txProvider.getFee(tx);
-      tx.blockheight = tx.vout[0].mintHeight;
+      if (tx.vout.length > 0) {
+        tx.blockheight = tx.vout[0].mintHeight;
+      }
       tx.blocktime = new Date(tx.blockTime).getTime() / 1000;
       tx.time = this.blocktime
         ? this.blocktime
@@ -154,6 +160,7 @@ export class TransactionListComponent implements OnInit {
 
   public loadMore(infiniteScroll) {
     if (
+      (this.queryType === 'blockHash' && this.chainNetwork.chain === 'FIRO') ||
       (this.queryType === 'blockHash' && this.chainNetwork.chain === 'BTC') ||
       this.chainNetwork.chain === 'BCH' ||
       this.chainNetwork.chain === 'DOGE'

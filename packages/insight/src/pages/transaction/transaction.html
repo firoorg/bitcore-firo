@@ -29,7 +29,7 @@
 
         <ion-list class="list--summary">
 
-          <transaction-summary *ngIf="chainNetwork.chain === 'BTC' || chainNetwork.chain === 'BCH' || chainNetwork.chain === 'DOGE'" [tx]="tx" [chainNetwork]="chainNetwork"></transaction-summary>
+          <transaction-summary *ngIf="chainNetwork.chain === 'FIRO' || chainNetwork.chain === 'BTC' || chainNetwork.chain === 'BCH' || chainNetwork.chain === 'DOGE'" [tx]="tx" [chainNetwork]="chainNetwork"></transaction-summary>
           <transaction-summary-eth *ngIf="chainNetwork.chain === 'ETH'" [tx]="tx" [chainNetwork]="chainNetwork"></transaction-summary-eth>
 
           <ion-item>
@@ -51,10 +51,281 @@
             </ion-note>
           </ion-item>
         </ion-list>
-
+        <div *ngIf="extraPayload">
+          <div style="float: right">
+            <span>
+              <ion-icon name="add-circle" [hidden]="extraPayloadExpanded" (click)="extraPayloadExpanded=!extraPayloadExpanded"></ion-icon>
+              <ion-icon name="remove-circle" [hidden]="!extraPayloadExpanded" (click)="extraPayloadExpanded=!extraPayloadExpanded"></ion-icon>
+            </span>
+            <strong (click)="extraPayloadExpanded=!extraPayloadExpanded">
+              <span *ngIf="extraPayload.proReg">Provider Register</span>
+              <span *ngIf="extraPayload.proUpServ">Provider Update Service</span>
+              <span *ngIf="extraPayload.proUpReg">Provider Update Registrar</span>
+              <span *ngIf="extraPayload.proUpRev">Provider Revoke</span>
+              <span *ngIf="extraPayload.cbTx">Coinbase</span>
+              <span *ngIf="extraPayload.finalCommitment">Final Commitment</span>
+              <span *ngIf="extraPayload.sporkTx">Spork Control</span>
+            </strong>
+          </div>
+          <ion-list class="list--summary" *ngIf="extraPayloadExpanded && extraPayload.proReg">
+            <ion-item>
+              Version
+              <ion-note item-end>
+                {{ extraPayload.proReg.version }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Collateral
+              <ion-note item-end>
+                <a (click)="goToTx(extraPayload.proReg.collateralHash)">{{ extraPayload.proReg.collateralHash }}:{{ extraPayload.proReg.collateralIndex }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Service
+              <ion-note item-end>
+                {{ extraPayload.proReg.service }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Owner Address
+              <ion-note item-end>
+                <a (click)="goToAddress(extraPayload.proReg.ownerAddress)">{{ extraPayload.proReg.ownerAddress }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Payout Address
+              <ion-note item-end>
+                <a (click)="goToAddress(extraPayload.proReg.payoutAddress)">{{ extraPayload.proReg.payoutAddress }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Operator Pubkey
+              <ion-note item-end>
+                {{ extraPayload.proReg.pubKeyOperator }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Operator Reward
+              <ion-note item-end>
+                {{ extraPayload.proReg.operatorReward }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Input Hash
+              <ion-note item-end>
+                {{ extraPayload.proReg.inputsHash }}
+              </ion-note>
+            </ion-item>
+          </ion-list>
+          <ion-list class="list--summary" *ngIf="extraPayloadExpanded && extraPayload.proUpServ">
+            <ion-item>
+              Version
+              <ion-note item-end>
+                {{ extraPayload.proUpServ.version }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Provider Tx Hash
+              <ion-note item-end>
+                <a (click)="goToTx(extraPayload.proUpServ.proTxHash)">{{ extraPayload.proUpServ.proTxHash }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Service
+              <ion-note item-end>
+                {{ extraPayload.proUpServ.service }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Operator Payout Address
+              <ion-note item-end>
+                <a (click)="goToAddress(extraPayload.proUpServ.operatorPayoutAddress)">{{ extraPayload.proUpServ.operatorPayoutAddress }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Input Hash
+              <ion-note item-end>
+                {{ extraPayload.proUpServ.inputsHash }}
+              </ion-note>
+            </ion-item>
+          </ion-list>
+          <ion-list class="list--summary" *ngIf="extraPayloadExpanded && extraPayload.proUpReg">
+            <ion-item>
+              Version
+              <ion-note item-end>
+                {{ extraPayload.proUpReg.version }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Provider Tx Hash
+              <ion-note item-end>
+                <a (click)="goToTx(extraPayload.proUpReg.proTxHash)">{{ extraPayload.proUpReg.proTxHash }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Payout Address
+              <ion-note item-end>
+                <a (click)="goToAddress(extraPayload.proUpReg.payoutAddress)">{{ extraPayload.proUpReg.payoutAddress }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Operator Pubkey
+              <ion-note item-end>
+                {{ extraPayload.proUpReg.pubKeyOperator }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Input Hash
+              <ion-note item-end>
+                {{ extraPayload.proUpReg.inputsHash }}
+              </ion-note>
+            </ion-item>
+          </ion-list>
+          <ion-list class="list--summary" *ngIf="extraPayloadExpanded && extraPayload.proUpRev">
+            <ion-item>
+              Version
+              <ion-note item-end>
+                {{ extraPayload.proUpRev.version }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Provider Tx Hash
+              <ion-note item-end>
+                <a (click)="goToTx(extraPayload.proUpRev.proTxHash)">{{ extraPayload.proUpRev.proTxHash }}</a>
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Reason
+              <ion-note item-end>
+                {{ extraPayload.proUpRev.reason }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Input Hash
+              <ion-note item-end>
+                {{ extraPayload.proUpRev.inputsHash }}
+              </ion-note>
+            </ion-item>
+          </ion-list>
+          <ion-list class="list--summary" *ngIf="extraPayloadExpanded && extraPayload.cbTx">
+            <ion-item>
+              Version
+              <ion-note item-end>
+                {{ extraPayload.cbTx.version }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Height
+              <ion-note item-end>
+                {{ extraPayload.cbTx.height }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Node List
+              <ion-note item-end>
+                {{ extraPayload.cbTx.merkleRootMNList }}
+              </ion-note>
+            </ion-item>
+            <ion-item *ngIf="extraPayload.cbTx.version>=2">
+              Quorums
+              <ion-note item-end>
+                {{ extraPayload.cbTx.merkleRootQuorums }}
+              </ion-note>
+            </ion-item>
+          </ion-list>
+          <ion-list class="list--summary" *ngIf="extraPayloadExpanded && extraPayload.finalCommitment">
+            <ion-item>
+              Version
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.version }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Height
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.height }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Commitment Version
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.commitment.version }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              LLMQ Type
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.commitment.llmqType }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Quorum Hash
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.commitment.quorumHash }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Signers Count
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.commitment.signersCount }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Valid Members Count
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.commitment.validMembersCount }}
+              </ion-note>
+            </ion-item>
+            <ion-item>
+              Quorum Public Key
+              <ion-note item-end>
+                {{ extraPayload.finalCommitment.commitment.quorumPublicKey }}
+              </ion-note>
+            </ion-item>
+          </ion-list>
+          <ion-list class="list--summary" *ngIf="extraPayloadExpanded && extraPayload.sporkTx">
+            <ion-item>
+              Version: {{ extraPayload.sporkTx.version }}
+              <ion-note item-end>
+              </ion-note>
+            </ion-item>
+          </ion-list>
+          <ion-grid class="grid--table sporkTable-container" *ngIf="extraPayloadExpanded && extraPayload.sporkTx">
+            <ion-row>
+              <ion-col>
+                <h6>Feature</h6>
+              </ion-col>
+              <ion-col>
+                <h6>Height</h6>
+              </ion-col>
+              <ion-col>
+                <h6>Parameter</h6>
+              </ion-col>
+              <ion-col>
+                <h6>Type</h6>
+              </ion-col>
+            </ion-row>
+            <div class="sporkTable-container__rows">
+              <ion-row *ngFor="let item of extraPayload.sporkTx.actions">
+                <ion-col>
+                  {{ item.feature }}
+                </ion-col>
+                <ion-col>
+                  {{ item.enableAtHeight }}
+                </ion-col>
+                <ion-col>
+                  {{ item.parameter }}
+                </ion-col>
+                <ion-col>
+                  {{ item.actiontype }}
+                </ion-col>
+              </ion-row>
+            </div>
+          </ion-grid>
+        </div>
         <h2>Details</h2>
 
-        <transaction-details *ngIf="chainNetwork.chain === 'BTC' || chainNetwork.chain === 'BCH' || chainNetwork.chain === 'DOGE'" [tx]="tx" [showCoins]="true" [chainNetwork]="chainNetwork"></transaction-details>
+        <transaction-details *ngIf="chainNetwork.chain === 'FIRO' || chainNetwork.chain === 'BTC' || chainNetwork.chain === 'BCH' || chainNetwork.chain === 'DOGE'" [tx]="tx" [showCoins]="true" [chainNetwork]="chainNetwork"></transaction-details>
         <transaction-details-eth *ngIf="chainNetwork.chain === 'ETH'" [tx]="tx" [showCoins]="true" [chainNetwork]="chainNetwork"></transaction-details-eth>
       </div>
 

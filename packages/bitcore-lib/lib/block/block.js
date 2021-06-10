@@ -82,10 +82,14 @@ Block.fromObject = function fromObject(obj) {
  * @returns {Object} - An object representing the block data
  * @private
  */
-Block._fromBufferReader = function _fromBufferReader(br) {
+Block._fromBufferReader = function _fromBufferReader (br) {
   var info = {};
   $.checkState(!br.finished(), 'No block data received');
   info.header = BlockHeader.fromBufferReader(br);
+  if (info.header.firoMTP) {
+    // skip MTP part from block
+    br.read(198864);
+  }
   var transactions = br.readVarintNum();
   info.transactions = [];
   for (var i = 0; i < transactions; i++) {

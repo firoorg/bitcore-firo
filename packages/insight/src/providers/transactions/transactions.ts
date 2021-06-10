@@ -29,6 +29,15 @@ export interface ApiTx {
   spentHeight: number;
   value: number;
   coins?: any;
+  extraPayload?: {
+    proReg?: any,
+    proUpServ?: any,
+    proUpReg?: any,
+    proUpRev?: any,
+    cbTx?: any,
+    finalCommitment?: any,
+    sporkTx?: any
+  }
 }
 
 export interface ApiUtxoCoinTx extends ApiTx {
@@ -151,6 +160,15 @@ export interface AppTx {
   blockheight: number;
   blocktime: number;
   coins?: any;
+  extraPayload?: {
+    proReg?: any,
+    proUpServ?: any,
+    proUpReg?: any,
+    proUpRev?: any,
+    cbTx?: any,
+    finalCommitment?: any,
+    sporkTx?: any
+  }
 }
 
 export interface AppUtxoCoinsTx extends AppTx {
@@ -216,7 +234,8 @@ export class TxsProvider {
       isCoinBase: tx.coinbase,
       size: tx.size,
       locktime: tx.locktime,
-      valueOut: tx.value
+      valueOut: tx.value,
+      extraPayload: tx.extraPayload
     };
   }
 

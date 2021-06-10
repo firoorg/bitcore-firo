@@ -7,6 +7,7 @@ export interface BlockHeaderObj {
   merkleRoot: string;
   bits: number;
   nonce: number;
+  firoMTP?: boolean;
 }
 export interface BlockHeader {
   toObject: () => BlockHeaderObj;

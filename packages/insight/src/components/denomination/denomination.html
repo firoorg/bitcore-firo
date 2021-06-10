@@ -4,6 +4,7 @@
       <ion-avatar item-start>
         <img *ngIf="chainNetwork.network === 'mainnet' && chainNetwork.chain !=='ALL'" src="assets/img/currency_logos/{{ chainNetwork.chain.toLowerCase() }}.svg" class="logo" alt="{{ chainNetwork.chain }}"/>
         <img *ngIf=" chainNetwork.network !=='mainnet' && chainNetwork.chain==='BTC'" src=" assets/img/btcicon-testnet.svg" class="logo"  alt="{{ chainNetwork.chain }}"/>
+        <img *ngIf=" chainNetwork.network !=='mainnet' && chainNetwork.chain==='FIRO'" src=" assets/img/firoicon.svg" class="logo" alt="{{ chainNetwork.chain }}"/>
         <img *ngIf="chainNetwork.network !== 'mainnet' && chainNetwork.chain==='BCH'" src="assets/img/bchicon-testnet.svg" class="logo" alt="{{ chainNetwork.chain }}"/>
         <img *ngIf="chainNetwork.network !== 'mainnet' && chainNetwork.chain==='DOGE'" src="assets/img/doge-logo-testnet.svg" class="logo" alt="{{ chainNetwork.chain }}"/>
         <img [ngClass]="{'secondary': chainNetwork.network ==='testnet'}" *ngIf="chainNetwork.network !== 'mainnet' && chainNetwork.chain==='ETH'" src="assets/img/currency_logos/eth.svg" class="logo" alt="{{ chainNetwork.chain }}"/>
@@ -13,6 +14,32 @@
       </ion-label>
       <ion-label color="dark" *ngIf="chainNetwork.chain === 'ALL'">
         All blockchains
+      </ion-label>
+    </ion-item>
+  </ion-row>
+</ion-list>
+
+<ion-list no-lines *ngIf="api.networkSettings.selectedNetwork.chain==='FIRO'">
+  <ion-row>
+    <ion-item-divider>
+      More
+    </ion-item-divider>
+
+    <ion-item (click)="openStatus(api.networkSettings.selectedNetwork)">
+      <ion-avatar item-start>
+        <img src=" assets/img/firo-status-icon.svg" class="logo" />
+      </ion-avatar>
+      <ion-label color="dark">
+        Status
+      </ion-label>
+    </ion-item>
+
+    <ion-item (click)="openLelantusStatus(api.networkSettings.selectedNetwork)">
+      <ion-avatar item-start>
+        <img src=" assets/img/lelantus-status-icon.svg" class="logo" />
+      </ion-avatar>
+      <ion-label color="dark">
+        Lelantus
       </ion-label>
     </ion-item>
   </ion-row>

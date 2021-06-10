@@ -25,7 +25,7 @@ router.get('/', function(req, res) {
     network,
     req,
     res,
-    args: { limit, since, direction, paging }
+    args: { limit, since, direction, paging, sort: { txIndex: direction ? Number(direction) : 1 } }
   };
 
   if (blockHeight !== undefined) {
@@ -151,7 +151,7 @@ router.post('/send', async function(req, res) {
     return res.send({ txid });
   } catch (err) {
     logger.error(err);
-    return res.status(500).send(err.message);
+    return res.send({ error: err.message + " Code: " + err.code });
   }
 });
 
