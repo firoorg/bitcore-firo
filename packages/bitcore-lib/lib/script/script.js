@@ -572,6 +572,17 @@ Script.prototype.isLelantusJoinSplit = function () {
 };
 
 /**
+ * @returns {boolean} if this is an Elysium transaction script
+ */
+Script.prototype.isElysiumTransaction = function () {
+  if (this.isDataOut()) {
+    return this.getData().toString().startsWith('elysium');
+  }
+
+  return false;
+};
+
+/**
  * Retrieve the associated data for this script.
  * In the case of a pay to public key hash, P2SH, P2WSH, or P2WPKH, return the hash.
  * In the case of a standard OP_RETURN, return the data
@@ -621,8 +632,9 @@ Script.types.SIGMA_SPEND = 'Sigmaspend';
 Script.types.LELANTUS_MINT = 'Lelantusmint';
 Script.types.LELANTUS_JMINT = 'Lelantusjmint';
 Script.types.LELANTUS_JOIN_SPLIT = 'Lelantusjsplit';
+Script.types.ELYSIUM_TX = 'Elysium';
 
-Script.OP_RETURN_STANDARD_SIZE = 80;
+Script.OP_RETURN_STANDARD_SIZE = 16384;
 
 /**
  * @returns {object} The Script type if it is a known form,
@@ -651,6 +663,7 @@ Script.firoOutputIdentifiers.LELANTUS_JMINT = Script.prototype.isLelantusJMint;
 Script.firoOutputIdentifiers.LELANTUS_MINT = Script.prototype.isLelantusMint;
 Script.firoOutputIdentifiers.SIGMA_MINT = Script.prototype.isSigmaMint;
 Script.firoOutputIdentifiers.ZERO_COIN_MINT = Script.prototype.isZeroCoinMint;
+Script.firoOutputIdentifiers.ELYSIUM_TX = Script.prototype.isElysiumTransaction;
 
 /**
  * @returns {object} The Script type if it is a known form,
