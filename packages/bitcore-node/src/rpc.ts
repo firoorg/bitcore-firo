@@ -159,6 +159,10 @@ export class AsyncRPC {
   async sendtoaddress(address: string, value: string | number) {
     return this.call<string>('sendtoaddress', [address, value]);
   }
+
+  async elysium_gettransaction(txhash: string): Promise<RPCElysiumTransaction> {
+    return this.call<RPCElysiumTransaction>('elysium_gettransaction', [txhash]);
+  }
 }
 
 export interface RPCBlock<T> {
@@ -217,4 +221,40 @@ export interface RPCTransaction {
   confirmations: number;
   time: number;
   blocktime: number;
+}
+
+export interface RPCElysiumTransaction {
+  txid: string;
+  fee: string;
+  sendingaddress: string;
+  referenceaddress: string;
+  ismine: boolean;
+  version: number;
+  type_int: number;
+  type: 'Simple Send' | 'Create Property - Fixed' | 'Create Property - Manual' | 'Grant Property Tokens' |
+      'Revoke Property Tokens' | 'Freeze Property Tokens' | 'Unfreeze Property Tokens' | 'Lelantus Mint' |
+      'Lelantus JoinSplit' | string;
+
+  confirmations: number;
+  // if confirmations > 0
+  block?: number;
+  valid?: boolean;
+  invalidreason?: string; // if valid
+  blockhash?: string;
+  blocktime?: number;
+  positioninblock?: number;
+
+  // if confirmations > 0 and type is enumerated above
+  propertyid?: number;
+  divisible?: boolean;
+  amount?: number;
+
+  // if ['Create Property - Fixed', 'Create Property - Manual'].contains(type)
+  ecosystem: 'main' | 'test';
+  propertytype: 'divisible' | 'indivisible';
+  category: string;
+  subcategory: string;
+  propertyname: string;
+  data: string;
+  url: string;
 }

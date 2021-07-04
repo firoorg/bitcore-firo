@@ -7,6 +7,7 @@ export interface BitcoinScript {
   classify: () => string;
   chunks: Array<{ buf: Buffer }>;
   toAddress: (network: string) => BitcoinAddress;
+  isElysiumTransaction: () => boolean;
 }
 export interface BitcoinInputObj {
   prevTxId: string;

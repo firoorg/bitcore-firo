@@ -1,5 +1,7 @@
 import { LoggifyClass } from '../decorators/Loggify';
 import logger from '../logger';
+import {AsyncRPC, RPCElysiumTransaction} from '../rpc';
+import {Config} from '../services/config';
 import { StorageService } from '../services/storage';
 import { SpentHeightIndicators } from '../types/Coin';
 import { BitcoinBlockType, BitcoinHeaderObj } from '../types/namespaces/Bitcoin';
@@ -50,6 +52,9 @@ export class BitcoinBlock extends BaseBlock<IBtcBlock> {
     chain: string;
     network: string;
   }) {
+    const chainConfig = Config.chainConfig({chain: params.chain, network: params.network});
+    const rpc = new AsyncRPC(chainConfig.rpc.username, chainConfig.rpc.password, chainConfig.rpc.host, chainConfig.rpc.port);
+
     const { chain, network, block, parentChain, forkHeight, initialSyncComplete } = params;
     const blockOp = await this.getBlockOp(params);
     const convertedBlock = blockOp.updateOne.update.$set;
@@ -66,8 +71,33 @@ export class BitcoinBlock extends BaseBlock<IBtcBlock> {
       logger.debug('Updating previous block.nextBlockHash ', convertedBlock.hash);
     }
 
+    const elysiumDataPromises: Promise<RPCElysiumTransaction>[] = [];
+    for (const tx of block.transactions) {
+      let isElysium = false;
+      for (const txout of tx.outputs) {
+        if (txout.script.isElysiumTransaction()) {
+          isElysium = true;
+          break;
+        }
+      }
+
+      if (isElysium) {
+        elysiumDataPromises.push((async () => {
+          while (true) {
+            try {
+              return await rpc.elysium_gettransaction(tx.hash);
+            } catch (e) {
+              logger.error(`Failed to fetch data for Elysium transaction ${tx.hash}: ${e}; trying again in 3s...`);
+              await new Promise(r => setTimeout(r, 3000));
+            }
+          }
+        })());
+      }
+    }
+
     await TransactionStorage.batchImport({
       txs: block.transactions,
+      elysiumTxData: await Promise.all(elysiumDataPromises),
       blockHash: convertedBlock.hash,
       blockTime: new Date(time),
       blockTimeNormalized: new Date(timeNormalized),
