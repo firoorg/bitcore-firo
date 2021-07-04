@@ -33,6 +33,7 @@ export type IBtcTransaction = ITransaction & {
   inputCount: number;
   outputCount: number;
   size: number;
+  elysium?: RPCElysiumTransaction;
 };
 
 export type TaggedBitcoinTx = BitcoinTransaction & { wallets: Array<ObjectID> };
@@ -777,7 +778,8 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
       outputCount: tx.outputCount || -1,
       size: tx.size || -1,
       fee: tx.fee || -1,
-      value: tx.value || -1
+      value: tx.value || -1,
+      elysium: tx.elysium
     };
     if (options && options.object) {
       return transaction;

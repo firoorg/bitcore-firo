@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as winston from 'winston';
 import parseArgv from './utils/parseArgv';
 let args = parseArgv([], ['DEBUG']);
@@ -16,22 +17,21 @@ const timezone = new Date()
   .pop();
 
 export const formatTimestamp = (date: Date) =>
-  `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
-    .getDate()
-    .toString()
-    .padStart(2, '0')} ${date
-    .getHours()
-    .toString()
-    .padStart(2, '0')}:${date
-    .getMinutes()
-    .toString()
-    .padStart(2, '0')}:${date
-    .getSeconds()
-    .toString()
-    .padStart(2, '0')}.${date
-    .getMilliseconds()
-    .toString()
-    .padEnd(3, '0')} ${timezone}`;
+  `${
+      date.getFullYear()
+    }-${
+      _.padStart((date.getMonth() + 1).toString(), 2, '0')
+    }-${
+      _.padStart(date .getDate() .toString(), 2, '0')
+    } ${
+      _.padStart(date.getHours().toString(), 2, '0')
+    }:${
+      _.padStart(date.getMinutes().toString(), 2, '0')
+    }:${
+      _.padStart(date.getSeconds().toString(), 2, '0')
+    }.${
+      _.padEnd(date.getMilliseconds().toString(), 3, '0')
+    } ${timezone}`;
 
 export const timestamp = () => formatTimestamp(new Date());
 
