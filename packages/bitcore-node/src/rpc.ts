@@ -160,8 +160,13 @@ export class AsyncRPC {
     return this.call<string>('sendtoaddress', [address, value]);
   }
 
-  async elysium_gettransaction(txhash: string): Promise<RPCElysiumTransaction> {
-    return this.call<RPCElysiumTransaction>('elysium_gettransaction', [txhash]);
+  async elysium_gettransaction(txhash: string): Promise<ElysiumTransaction> {
+    const res = await this.call<ElysiumTransaction>('elysium_gettransaction', [txhash]);
+    if (res.propertyid) {
+      const propertyCreationTxId = (await this.call('elysium_getproperty', [res.propertyid])).creationtxid;
+      res.propertyCreationTx = await this.call<ElysiumTransaction>('elysium_gettransaction', [propertyCreationTxId]);
+    }
+    return res;
   }
 }
 
@@ -223,7 +228,7 @@ export interface RPCTransaction {
   blocktime: number;
 }
 
-export interface RPCElysiumTransaction {
+export interface ElysiumTransaction {
   txid: string;
   fee: string;
   sendingaddress: string;
@@ -248,6 +253,7 @@ export interface RPCElysiumTransaction {
   propertyid?: number;
   divisible?: boolean;
   amount?: number;
+  propertyCreationTx?: ElysiumTransaction;
 
   // if ['Create Property - Fixed', 'Create Property - Manual'].contains(type)
   ecosystem: 'main' | 'test';

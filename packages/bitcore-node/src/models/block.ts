@@ -1,6 +1,6 @@
 import { LoggifyClass } from '../decorators/Loggify';
 import logger from '../logger';
-import {AsyncRPC, RPCElysiumTransaction} from '../rpc';
+import {AsyncRPC, ElysiumTransaction} from '../rpc';
 import {Config} from '../services/config';
 import { StorageService } from '../services/storage';
 import { SpentHeightIndicators } from '../types/Coin';
@@ -71,7 +71,7 @@ export class BitcoinBlock extends BaseBlock<IBtcBlock> {
       logger.debug('Updating previous block.nextBlockHash ', convertedBlock.hash);
     }
 
-    const elysiumDataPromises: Promise<RPCElysiumTransaction>[] = [];
+    const elysiumDataPromises: Promise<ElysiumTransaction>[] = [];
     for (const tx of block.transactions) {
       let isElysium = false;
       for (const txout of tx.outputs) {

@@ -5,7 +5,7 @@ import { Readable, Transform } from 'stream';
 import { LoggifyClass } from '../decorators/Loggify';
 import logger from '../logger';
 import { Libs } from '../providers/libs';
-import {RPCElysiumTransaction} from '../rpc';
+import {ElysiumTransaction} from '../rpc';
 import { Config } from '../services/config';
 import { StorageService } from '../services/storage';
 import { SpentHeightIndicators } from '../types/Coin';
@@ -33,7 +33,7 @@ export type IBtcTransaction = ITransaction & {
   inputCount: number;
   outputCount: number;
   size: number;
-  elysium?: RPCElysiumTransaction;
+  elysium?: ElysiumTransaction;
 };
 
 export type TaggedBitcoinTx = BitcoinTransaction & { wallets: Array<ObjectID> };
@@ -104,7 +104,7 @@ export interface TxOp {
         mempoolTime?: Date;
         txIndex: number,
         version?: number;
-        elysium?: RPCElysiumTransaction;
+        elysium?: ElysiumTransaction;
       };
       $setOnInsert?: TxOp['updateOne']['update']['$set'];
     };
@@ -207,7 +207,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
 
   async batchImport(params: {
     txs: Array<BitcoinTransaction>;
-    elysiumTxData?: Array<RPCElysiumTransaction>;
+    elysiumTxData?: Array<ElysiumTransaction>;
     height: number;
     mempoolTime?: Date;
     blockTime?: Date;
@@ -272,7 +272,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
 
   async streamTxOps(params: {
     txs: Array<TaggedBitcoinTx>;
-    elysiumTxData?: Array<RPCElysiumTransaction>;
+    elysiumTxData?: Array<ElysiumTransaction>;
     height: number;
     blockTime?: Date;
     blockHash?: string;
