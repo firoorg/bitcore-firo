@@ -105,7 +105,8 @@ export class SearchProvider {
       dataIndex: 2,
       type: 'address',
       chainNetworks: [
-        { chain: 'FIRO', network: 'testnet' }
+        { chain: 'FIRO', network: 'testnet' },
+        { chain: 'FIRO', network: 'regtest' }
       ],
     },
     // Doge Address
@@ -123,6 +124,8 @@ export class SearchProvider {
       type: 'blockOrTx',
       chainNetworks: [
         { chain: 'FIRO', network: 'mainnet' },
+        { chain: 'FIRO', network: 'testnet' },
+        { chain: 'FIRO', network: 'regtest' },
         { chain: 'BTC', network: 'mainnet' },
         { chain: 'BCH', network: 'mainnet' },
         { chain: 'DOGE', network: 'mainnet' },
