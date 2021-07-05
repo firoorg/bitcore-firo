@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {RPCElysiumTransaction} from '../../../../bitcore-node/src/rpc';
+import {ElysiumTransaction} from '../../../../bitcore-node/src/rpc';
 import { ApiProvider, ChainNetwork } from '../../providers/api/api';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { BlocksProvider } from '../blocks/blocks';
@@ -39,7 +39,7 @@ export interface ApiTx {
     finalCommitment?: any,
     sporkTx?: any
   };
-  elysium?: RPCElysiumTransaction;
+  elysium?: ElysiumTransaction;
 }
 
 export interface ApiUtxoCoinTx extends ApiTx {
