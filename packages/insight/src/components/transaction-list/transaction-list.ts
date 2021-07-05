@@ -144,6 +144,12 @@ export class TransactionListComponent implements OnInit {
 
       this.transactions.push(tx);
     });
+
+    if (txidCoins.elysiumData) {
+      for (const coin of this.transactions) {
+        coin.elysium = txidCoins.elysiumData[coin.txid];
+      }
+    }
   }
 
   public fetchBlockTxCoinInfo(pageNum) {

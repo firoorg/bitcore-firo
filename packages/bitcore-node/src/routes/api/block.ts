@@ -89,6 +89,13 @@ router.get('/:blockHash/coins/:limit/:pgnum', async function(req: Request, res: 
       return res.status(422).send('No txs for page');
     }
 
+    const elysiumData = {};
+    for (const tx of txs) {
+      if (tx.elysium) {
+        elysiumData[tx.txid] = tx.elysium;
+      }
+    }
+
     const txidIndexes: any = {};
     let txids = txs.map((tx, index) => {
       txidIndexes[index] = tx.txid;
@@ -119,7 +126,7 @@ router.get('/:blockHash/coins/:limit/:pgnum', async function(req: Request, res: 
     }
 
     const sanitize = (coins: Array<ICoin>) => coins.map(c => CoinStorage._apiTransform(c, { object: true }));
-    return res.json({ txids, inputs: sanitize(inputs), outputs: sanitize(outputs), previous, next });
+    return res.json({ txids, inputs: sanitize(inputs), outputs: sanitize(outputs), previous, next, elysiumData });
   } catch (err) {
     return res.status(500).send(err);
   }

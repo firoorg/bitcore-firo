@@ -134,8 +134,8 @@
           </div>
 
           <div item-end>
-            {{ getAmount(vout) }}
-            <span [hidden]="['Lelantusjmint', 'Elysium'].includes(vout.address)">
+            {{ getAmount(vout) || '0' }}
+            <span *ngIf="!['Lelantusjmint', 'Elysium'].includes(vout.address)">
               <span [hidden]="!vout.spentTxid">(S)</span>
               <span [hidden]="vout.spentTxid">(U)</span>
             </span>
