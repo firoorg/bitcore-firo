@@ -71,7 +71,7 @@ export class BitcoinBlock extends BaseBlock<IBtcBlock> {
       logger.debug('Updating previous block.nextBlockHash ', convertedBlock.hash);
     }
 
-    const elysiumDataPromises: Promise<ElysiumTransaction>[] = [];
+    const elysiumDataPromises: Promise<ElysiumTransaction | undefined>[] = [];
     for (const tx of block.transactions) {
       let isElysium = false;
       for (const txout of tx.outputs) {
@@ -83,21 +83,28 @@ export class BitcoinBlock extends BaseBlock<IBtcBlock> {
 
       if (isElysium) {
         elysiumDataPromises.push((async () => {
-          while (true) {
+          for (let retryCount = 0; retryCount < 10; retryCount++) {
             try {
-              return await rpc.elysium_gettransaction(tx.hash);
+              return await new Promise((resolve, reject) => {
+                setTimeout(() => reject(new Error('timeout')), 5000);
+                rpc.elysium_gettransaction(tx.hash).then(resolve).catch(reject);
+              }) as ElysiumTransaction;
             } catch (e) {
-              logger.error(`Failed to fetch data for Elysium transaction ${tx.hash}: ${e}; trying again in 3s...`);
+              logger.warn(`Failed to fetch data for Elysium transaction ${tx.hash}: ${e.message}; trying again in 3s...`);
               await new Promise(r => setTimeout(r, 3000));
             }
           }
+
+          logger.error(`Failed to fetch data for Elysium transaction ${tx.hash} 10 times; not trying again...`);
+
+          return;
         })());
       }
     }
 
     await TransactionStorage.batchImport({
       txs: block.transactions,
-      elysiumTxData: await Promise.all(elysiumDataPromises),
+      elysiumTxData: (await Promise.all(elysiumDataPromises)).filter(data => data) as ElysiumTransaction[],
       blockHash: convertedBlock.hash,
       blockTime: new Date(time),
       blockTimeNormalized: new Date(timeNormalized),

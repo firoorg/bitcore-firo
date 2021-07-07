@@ -88,7 +88,7 @@ export class TransactionDetailsComponent implements OnInit {
       return 'Unparsed address';
     } else if (this.tx.elysium && !this.tx.elysium.valid) {
       return 'Invalid Elysium Transaction';
-    } else if (v.address === 'Elysium') {
+    } else if (v.address === 'Elysium' && this.tx.elysium) {
       switch (this.tx.elysium.type) {
         case 'Lelantus Mint':
           return 'Mint';
@@ -109,7 +109,7 @@ export class TransactionDetailsComponent implements OnInit {
   public getAmount(v: ApiCoin): string {
     if (v.address === 'Lelantusjmint') {
       return 'Hidden';
-    } else if (v.address === 'Elysium') {
+    } else if (v.address === 'Elysium' && this.tx.elysium) {
       const amount = this.tx.elysium.divisible ? this.tx.elysium.amount : this.tx.elysium.amount * 1e8;
       const currencySymbol = `ℙ${this.tx.elysium.propertyid}`;
       return `${this.currencyProvider.roundFloat(amount, 8)} ${currencySymbol}`;
