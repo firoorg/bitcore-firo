@@ -51,7 +51,7 @@
             </ion-note>
           </ion-item>
 
-          <div *ngIf="tx.elysium">
+          <div *ngIf="tx.elysium && tx.elysium.valid">
             <ion-item>
               Elysium Transaction Type
               <ion-note item-end>{{ tx.elysium.type }}</ion-note>
