@@ -86,7 +86,7 @@ export class TransactionDetailsComponent implements OnInit {
   public getAddress(v: ApiCoin): string {
     if (v.address === 'false') {
       return 'Unparsed address';
-    } else if (this.tx.elysium && !this.tx.elysium.valid) {
+    } else if (v.address === 'Elysium' && this.tx.elysium && !this.tx.elysium.valid) {
       return 'Invalid Elysium Transaction';
     } else if (v.address === 'Elysium' && this.tx.elysium) {
       switch (this.tx.elysium.type) {
