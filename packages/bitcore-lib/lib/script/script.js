@@ -568,7 +568,7 @@ Script.prototype.isLelantusJMint = function () {
  * @returns {boolean} if this is a lelantus join split script
  */
 Script.prototype.isLelantusJoinSplit = function () {
-  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_LELANTUS_JOIN_SPLIT;
+  return this.chunks.length > 0 && [Opcode.OP_LELANTUS_JOIN_SPLIT_PAYLOAD, Opcode.OP_LELANTUS_JOIN_SPLIT].includes(this.chunks[0].opcodenum);
 };
 
 /**
