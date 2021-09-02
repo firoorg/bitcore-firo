@@ -34,6 +34,9 @@ var BlockHeader = function BlockHeader(arg) {
   if (info.firoMTP) {
     this.firoMTP = info.firoMTP;
   }
+  if (info.firoProgPow) {
+    this.firoProgPow = info.firoProgPow;
+  }
 
   if (info.hash) {
     $.checkState(
@@ -91,6 +94,9 @@ BlockHeader._fromObject = function _fromObject(data) {
   if (data.firoMTP) {
     info.firoMTP = data.firoMTP;
   }
+  if (data.firoProgPow) {
+    info.firoProgPow = data.firoProgPow;
+  }
   return info;
 };
 
@@ -137,10 +143,11 @@ BlockHeader.fromString = function fromString(str) {
 
 /**
  * @param {BufferReader} - A BufferReader of the block header
+ * @param {string} - Name of source network
  * @returns {Object} - An object representing block header data
  * @private
  */
-BlockHeader._fromBufferReader = function _fromBufferReader(br) {
+BlockHeader._fromBufferReader = function _fromBufferReader(br, network) {
   var info = {};
   info.version = br.readInt32LE();
   info.prevHash = br.read(32);
@@ -148,18 +155,23 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.time = br.readUInt32LE();
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
-  if (info.version == BlockHeader.Constants.FIRO_MTP_VERSION) {
-    info.firoMTP = br.read(100);
+  if (network == 'testnet' && info.time > 1630069200) {
+    info.firoProgPow = br.read(40);
+  } else {
+    if (info.version == BlockHeader.Constants.FIRO_MTP_VERSION) {
+      info.firoMTP = br.read(100);
+    }
   }
   return info;
 };
 
 /**
  * @param {BufferReader} - A BufferReader of the block header
+ * @param {string} - Name of source network
  * @returns {BlockHeader} - An instance of block header
  */
-BlockHeader.fromBufferReader = function fromBufferReader(br) {
-  var info = BlockHeader._fromBufferReader(br);
+BlockHeader.fromBufferReader = function fromBufferReader(br, network) {
+  var info = BlockHeader._fromBufferReader(br, network);
   return new BlockHeader(info);
 };
 
@@ -178,6 +190,9 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
   };
   if (this.firoMTP) {
     result.firoMTP = this.firoMTP;
+  }
+  if (this.firoProgPow) {
+    result.firoProgPow = this.firoProgPow;
   }
 
   return result;
@@ -213,6 +228,9 @@ BlockHeader.prototype.toBufferWriter = function toBufferWriter(bw) {
   bw.writeUInt32LE(this.nonce);
   if (this.firoMTP) {
     bw.write(this.firoMTP);
+  }
+  if (this.firoProgPow) {
+    bw.write(this.firoProgPow);
   }
   return bw;
 };
