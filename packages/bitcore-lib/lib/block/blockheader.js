@@ -155,7 +155,7 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br, network) {
   info.time = br.readUInt32LE();
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
-  if (network == 'testnet' && info.time > 1630069200) {
+  if (network == 'testnet' && info.time >= 1630069200 || network == 'livenet' && info.time >= 1635228000) {
     info.firoProgPow = br.read(40);
   } else {
     if (info.version == BlockHeader.Constants.FIRO_MTP_VERSION) {
