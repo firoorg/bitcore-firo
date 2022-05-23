@@ -1,3 +1,5 @@
+import {ElysiumTransaction} from '../rpc';
+
 export interface TransactionJSON {
   _id: string;
   txid: string;
@@ -22,5 +24,7 @@ export interface TransactionJSON {
     cbTx?: any,
     finalCommitment?: any,
     sporkTx?: any
-  }
+  };
+  elysium?: ElysiumTransaction;
+  elysiumProperty?: ElysiumTransaction;
 }

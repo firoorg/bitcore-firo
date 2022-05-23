@@ -92,7 +92,7 @@ export class SearchProvider {
     },
     // FIRO Address
     {
-      regexes: [/^(firo:)?([^T][a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend)$/],
+      regexes: [/^(firo:)?([^T][a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend|Elysium)$/],
       dataIndex: 2,
       type: 'address',
       chainNetworks: [
@@ -101,11 +101,12 @@ export class SearchProvider {
     },
     // FIRO testnet Address
     {
-      regexes: [/^(firotest:)?(T[a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend)$/],
+      regexes: [/^(firotest:)?(T[a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend|Elysium)$/],
       dataIndex: 2,
       type: 'address',
       chainNetworks: [
-        { chain: 'FIRO', network: 'testnet' }
+        { chain: 'FIRO', network: 'testnet' },
+        { chain: 'FIRO', network: 'regtest' }
       ],
     },
     // Doge Address
@@ -129,7 +130,8 @@ export class SearchProvider {
         { chain: 'FIRO', network: 'testnet' },
         { chain: 'BTC', network: 'testnet' },
         { chain: 'BCH', network: 'testnet' },
-        { chain: 'DOGE', network: 'testnet' }
+        { chain: 'DOGE', network: 'testnet' },
+        { chain: 'FIRO', network: 'regtest' }
       ],
     },
     // ETH block or tx
@@ -155,7 +157,8 @@ export class SearchProvider {
         { chain: 'BTC', network: 'testnet' },
         { chain: 'BCH', network: 'testnet' },
         { chain: 'DOGE', network: 'testnet' },
-        { chain: 'ETH', network: 'testnet' }
+        { chain: 'ETH', network: 'testnet' },
+        { chain: 'FIRO', network: 'regtest' },
       ],
     },
   ]

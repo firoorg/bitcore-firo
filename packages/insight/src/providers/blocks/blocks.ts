@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { merge, shareReplay } from 'rxjs/operators';
+import {ElysiumTransaction} from '../../../../bitcore-node/src/rpc';
 import { ApiProvider, ChainNetwork } from '../../providers/api/api';
 import { CurrencyProvider } from '../../providers/currency/currency';
 
@@ -25,6 +26,7 @@ export interface ApiUtxoCoinBlock extends ApiBlock {
   merkleRoot: string;
   bits: number;
   version: number;
+  elysiumData?: {[elysiumTxid: string]: ElysiumTransaction}
 }
 
 export interface ApiEthBlock extends ApiBlock {

@@ -50,8 +50,17 @@ export class TransactionDetailsComponent implements OnInit {
     if (this.chainNetwork.chain !== 'ETH') {
       if (!this.tx.vin || !this.tx.vin.length) {
         this.getCoins();
+        this.getElysium();
       }
     }
+  }
+
+  public getElysium(): void {
+    this.txProvider
+        .getTx(this.tx.txid, this.chainNetwork)
+        .subscribe(tx => {
+          this.tx.elysium = tx.elysium;
+        })
   }
 
   public getCoins(): void {
@@ -77,9 +86,36 @@ export class TransactionDetailsComponent implements OnInit {
   public getAddress(v: ApiCoin): string {
     if (v.address === 'false') {
       return 'Unparsed address';
+    } else if (v.address === 'Elysium' && this.tx.elysium && !this.tx.elysium.valid) {
+      return 'Invalid Elysium Transaction';
+    } else if (v.address === 'Elysium' && this.tx.elysium) {
+      switch (this.tx.elysium.type) {
+        case 'Lelantus Mint':
+          return 'Mint';
+        case 'Lelantus JoinSplit':
+        case 'Simple Send':
+          return this.tx.elysium.referenceaddress;
+        case 'Create Property - Fixed':
+        case 'Create Property - Manual':
+          return this.tx.elysium.sendingaddress;
+        default:
+          return 'Elysium Transaction';
+      }
+    } else {
+      return v.address;
     }
+  }
 
-    return v.address;
+  public getAmount(v: ApiCoin): string {
+    if (v.address === 'Lelantusjmint') {
+      return 'Hidden';
+    } else if (v.address === 'Elysium' && this.tx.elysium && this.tx.elysium.valid) {
+      const amount = this.tx.elysium.divisible ? this.tx.elysium.amount : this.tx.elysium.amount * 1e8;
+      const currencySymbol = `ℙ${this.tx.elysium.propertyid}`;
+      return `${this.currencyProvider.roundFloat(amount, 8)} ${currencySymbol}`;
+    } else {
+      return `${this.currencyProvider.getConvertedNumber(v.value, this.chainNetwork.chain)} ${this.currencyProvider.currencySymbol}`;
+    }
   }
 
   public getConfirmations() {

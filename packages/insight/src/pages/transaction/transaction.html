@@ -50,7 +50,61 @@
               Unconfirmed
             </ion-note>
           </ion-item>
+
+          <div *ngIf="tx.elysium && !tx.elysium.valid">
+            <ion-item>
+              Elysium Transaction Type
+              <ion-note item-end>{{ tx.elysium.type }}</ion-note>
+            </ion-item>
+            <ion-item>
+              Invalid Reason
+              <ion-note item-end>{{ tx.elysium.invalidreason }}</ion-note>
+            </ion-item>
+          </div>
+
+          <div *ngIf="tx.elysium && tx.elysium.valid">
+            <ion-item>
+              Elysium Transaction Type
+              <ion-note item-end>{{ tx.elysium.type }}</ion-note>
+            </ion-item>
+            <ion-item>
+              Elysium Property Creation Transaction
+              <ion-note item-end><a (click)="goToTx(tx.elysium.propertyCreationTx.txid)" role="button" tabindex="1">{{ tx.elysium.propertyCreationTx.txid }}</a></ion-note>
+            </ion-item>
+            <ion-item>
+              Elysium Property ID
+              <ion-note item-end>{{ tx.elysium.propertyid }}</ion-note>
+            </ion-item>
+            <ion-item>
+              Elysium Property Name
+              <ion-note item-end>{{ tx.elysium.propertyCreationTx.propertyname }}</ion-note>
+            </ion-item>
+
+            <div *ngIf="tx.txid == tx.elysium.propertyCreationTx.txid">
+              <ion-item>
+                Elysium Property Divsibility
+                <ion-note item-end>{{ tx.elysium.propertytype }}</ion-note>
+              </ion-item>
+              <ion-item>
+                Elysium Property Category
+                <ion-note item-end>{{ tx.elysium.category }}</ion-note>
+              </ion-item>
+              <ion-item>
+                Elysium Property Sub-Category
+                <ion-note item-end>{{ tx.elysium.subcategory }}</ion-note>
+              </ion-item>
+              <ion-item>
+                Elysium Property Note
+                <ion-note item-end>{{ tx.elysium.data }}</ion-note>
+              </ion-item>
+              <ion-item>
+                Elysium Property URL
+                <ion-note item-end>{{ tx.elysium.url }}</ion-note>
+              </ion-item>
+            </div>
+          </div>
         </ion-list>
+
         <div *ngIf="extraPayload">
           <div style="float: right">
             <span>

@@ -5,6 +5,7 @@ import { Readable, Transform } from 'stream';
 import { LoggifyClass } from '../decorators/Loggify';
 import logger from '../logger';
 import { Libs } from '../providers/libs';
+import {ElysiumTransaction} from '../rpc';
 import { Config } from '../services/config';
 import { StorageService } from '../services/storage';
 import { SpentHeightIndicators } from '../types/Coin';
@@ -32,6 +33,7 @@ export type IBtcTransaction = ITransaction & {
   inputCount: number;
   outputCount: number;
   size: number;
+  elysium?: ElysiumTransaction;
 };
 
 export type TaggedBitcoinTx = BitcoinTransaction & { wallets: Array<ObjectID> };
@@ -102,6 +104,7 @@ export interface TxOp {
         mempoolTime?: Date;
         txIndex: number,
         version?: number;
+        elysium?: ElysiumTransaction;
       };
       $setOnInsert?: TxOp['updateOne']['update']['$set'];
     };
@@ -204,6 +207,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
 
   async batchImport(params: {
     txs: Array<BitcoinTransaction>;
+    elysiumTxData?: Array<ElysiumTransaction>;
     height: number;
     mempoolTime?: Date;
     blockTime?: Date;
@@ -268,6 +272,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
 
   async streamTxOps(params: {
     txs: Array<TaggedBitcoinTx>;
+    elysiumTxData?: Array<ElysiumTransaction>;
     height: number;
     blockTime?: Date;
     blockHash?: string;
@@ -391,6 +396,7 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
                 inputCount: tx.inputs.length,
                 outputCount: tx.outputs.length,
                 value: tx.outputAmount,
+                elysium: (params.elysiumTxData || []).find(tx => tx.txid === txid),
                 wallets,
                 ...(mempoolTime && { mempoolTime })
               }
@@ -772,7 +778,8 @@ export class TransactionModel extends BaseTransaction<IBtcTransaction> {
       outputCount: tx.outputCount || -1,
       size: tx.size || -1,
       fee: tx.fee || -1,
-      value: tx.value || -1
+      value: tx.value || -1,
+      elysium: tx.elysium
     };
     if (options && options.object) {
       return transaction;

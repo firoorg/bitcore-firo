@@ -133,13 +133,12 @@
             </div>
           </div>
 
-          <div item-end *ngIf="getAddress(vout)!=='Lelantusjmint'">
-            {{ currencyProvider.getConvertedNumber(vout.value, chainNetwork.chain) | number:'1.0-8' }} {{ currencyProvider.currencySymbol }}
-            <span [hidden]="!vout.spentTxid">(S)</span>
-            <span [hidden]="vout.spentTxid">(U)</span>
-          </div>
-          <div item-end *ngIf="getAddress(vout)==='Lelantusjmint'">
-            Hidden
+          <div item-end>
+            {{ getAmount(vout) || '0' }}
+            <span *ngIf="!['Lelantusjmint', 'Elysium'].includes(vout.address)">
+              <span [hidden]="!vout.spentTxid">(S)</span>
+              <span [hidden]="vout.spentTxid">(U)</span>
+            </span>
           </div>
 
           <button title="Go to Transaction" item-end ion-button *ngIf="expanded && vout.spentTxid && vout.spentTxid !== '' " (click)="
