@@ -29,7 +29,7 @@ BlockMessage.prototype.setPayload = function(payload) {
   if (this.Block.prototype.fromRaw) {
     this.block = this.Block.fromRaw(payload);
   } else {
-    this.block = this.Block.fromBuffer(payload);
+    this.block = this.Block.fromBuffer(payload, this.network.name);
   }
 };
 

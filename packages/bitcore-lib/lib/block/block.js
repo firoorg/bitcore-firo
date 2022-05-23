@@ -79,13 +79,14 @@ Block.fromObject = function fromObject(obj) {
 
 /**
  * @param {BufferReader} - Block data
+ * @param {string} - Name of source network
  * @returns {Object} - An object representing the block data
  * @private
  */
-Block._fromBufferReader = function _fromBufferReader (br) {
+Block._fromBufferReader = function _fromBufferReader (br, network) {
   var info = {};
   $.checkState(!br.finished(), 'No block data received');
-  info.header = BlockHeader.fromBufferReader(br);
+  info.header = BlockHeader.fromBufferReader(br, network);
   if (info.header.firoMTP) {
     // skip MTP part from block
     br.read(198864);
@@ -100,20 +101,22 @@ Block._fromBufferReader = function _fromBufferReader (br) {
 
 /**
  * @param {BufferReader} - A buffer reader of the block
+ * @param {string} - Name of source network
  * @returns {Block} - An instance of block
  */
-Block.fromBufferReader = function fromBufferReader(br) {
+Block.fromBufferReader = function fromBufferReader(br, network) {
   $.checkArgument(br, 'br is required');
-  var info = Block._fromBufferReader(br);
+  var info = Block._fromBufferReader(br, network);
   return new Block(info);
 };
 
 /**
  * @param {Buffer} - A buffer of the block
+ * @param {string} - Name of source network
  * @returns {Block} - An instance of block
  */
-Block.fromBuffer = function fromBuffer(buf) {
-  return Block.fromBufferReader(new BufferReader(buf));
+Block.fromBuffer = function fromBuffer(buf, network) {
+  return Block.fromBufferReader(new BufferReader(buf), network);
 };
 
 /**
