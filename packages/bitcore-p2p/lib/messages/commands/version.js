@@ -37,7 +37,7 @@ function VersionMessage(arg, options) {
   this.nonce = arg.nonce || utils.getNonce();
   this.services = arg.services || new BN(1, 10);
   this.timestamp = arg.timestamp || new Date();
-  this.subversion = arg.subversion || '/Satoshi:0.14.10.0/'; //+ packageInfo.version + '/';
+  this.subversion = arg.subversion || '/Satoshi:0.14.11.1/'; //+ packageInfo.version + '/';
   this.startHeight = arg.startHeight || 0;
   this.relay = arg.relay === false ? false : true;
 }

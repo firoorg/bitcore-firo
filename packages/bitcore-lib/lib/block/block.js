@@ -89,7 +89,7 @@ Block._fromBufferReader = function _fromBufferReader (br, network) {
   info.header = BlockHeader.fromBufferReader(br, network);
   if (info.header.firoMTP) {
     // skip MTP part from block
-    br.read(198864);
+    br.read(16);
   }
   var transactions = br.readVarintNum();
   info.transactions = [];
