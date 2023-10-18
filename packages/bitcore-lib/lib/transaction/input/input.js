@@ -86,7 +86,7 @@ Input.prototype.toObject = Input.prototype.toJSON = function toObject() {
     outputIndex: this.outputIndex,
     sequenceNumber: this.sequenceNumber,
     script: this._scriptBuffer.toString('hex'),
-    isNotTxOutput: this.classifier == Script.types.LELANTUS_JOIN_SPLIT || this.classifier == Script.types.SIGMA_SPEND || this.classifier == Script.types.ZERO_COIN_SPEND
+    isNotTxOutput: this.classifier == Script.types.LELANTUS_JOIN_SPLIT || this.classifier == Script.types.SIGMA_SPEND || this.classifier == Script.types.ZERO_COIN_SPEND || this.classifier == Script.types.SPARKSPEND
   };
   // add human readable form if input contains valid script
   if (this.script) {

@@ -88,9 +88,9 @@ export class InternalStateProvider implements IChainStateService {
 
   async getBalanceForAddress(params: GetBalanceForAddressParams) {
     const { chain, network, address } = params;
-    if (address === "Lelantusjsplit") {
+    if (address === "Lelantusjsplit" || address === "Sparkspend") {
       const splitTxIds: string[] = (await CoinStorage.collection.aggregate<{ _id: string }>([
-        { $match: { chain, network, address: 'Lelantusjsplit', spentTxid: { $ne: null } } },
+        { $match: { chain, network, address: address, spentTxid: { $ne: null } } },
         { $group: { _id: '$spentTxid' } }
       ]).toArray()).map(v => v._id);
       let totalSplit: number = 0;

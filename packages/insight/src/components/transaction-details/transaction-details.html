@@ -86,10 +86,10 @@
             </div>
           </div>
 
-          <div item-end *ngIf="getAddress(vin)!=='Lelantusjsplit'">
+          <div item-end *ngIf="getAddress(vin)!=='Lelantusjsplit' || getAddress(vin)!=='Sparkspend'">
             {{ currencyProvider.getConvertedNumber(vin.value, chainNetwork.chain) | number:'1.0-8' }} {{ currencyProvider.currencySymbol }}
           </div>
-          <div item-end *ngIf="getAddress(vin)==='Lelantusjsplit'">
+          <div item-end *ngIf="getAddress(vin)==='Lelantusjsplit' || getAddress(vin)==='Sparkspend'">
             Hidden
           </div>
         </ion-item>
@@ -135,7 +135,7 @@
 
           <div item-end>
             {{ getAmount(vout) || '0' }}
-            <span *ngIf="!['Lelantusjmint', 'Elysium'].includes(vout.address)">
+            <span *ngIf="!['Lelantusjmint', 'Elysium', 'Sparksmint'].includes(vout.address)">
               <span [hidden]="!vout.spentTxid">(S)</span>
               <span [hidden]="vout.spentTxid">(U)</span>
             </span>

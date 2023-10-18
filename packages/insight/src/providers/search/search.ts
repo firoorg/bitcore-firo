@@ -92,7 +92,7 @@ export class SearchProvider {
     },
     // FIRO Address
     {
-      regexes: [/^(firo:)?([^T][a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend|Elysium)$/],
+      regexes: [/^(firo:)?([^T][a-km-zA-HJ-NP-Z1-9]{33}|Spark|Sparkmint|sparksmint|Sparkspend|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend|Elysium)$/],
       dataIndex: 2,
       type: 'address',
       chainNetworks: [
@@ -101,7 +101,7 @@ export class SearchProvider {
     },
     // FIRO testnet Address
     {
-      regexes: [/^(firotest:)?(T[a-km-zA-HJ-NP-Z1-9]{33}|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend|Elysium)$/],
+      regexes: [/^(firotest:)?(T[a-km-zA-HJ-NP-Z1-9]{33}|Spark|Sparkmint|Sparksmint|Sparkspend|Lelantus|Lelantusmint|Lelantusjmint|Lelantusjsplit|Sigma|Sigmamint|Sigmaspend|Elysium)$/],
       dataIndex: 2,
       type: 'address',
       chainNetworks: [
@@ -190,7 +190,7 @@ export class SearchProvider {
           this.searchTx(search.input).catch(err => Observable.of(err))
         );
       } else if (search.type === 'address') {
-        if (search.input === "Lelantus" || search.input === "Sigma") {
+        if (search.input === "Lelantus" || search.input === "Sigma" || search.input === "Spark") {
           searchArray.push(Observable.from([{ addr: [{ address: search.input, chain: search.chainNetwork.chain, network: search.chainNetwork.network }] }]));
         } else {
           searchArray.push(
