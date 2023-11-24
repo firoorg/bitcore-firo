@@ -570,6 +570,26 @@ Script.prototype.isLelantusJMint = function () {
 Script.prototype.isLelantusJoinSplit = function () {
   return this.chunks.length > 0 && [Opcode.OP_LELANTUS_JOIN_SPLIT_PAYLOAD, Opcode.OP_LELANTUS_JOIN_SPLIT].includes(this.chunks[0].opcodenum);
 };
+/**
+ * @returns {boolean} if this is a spark mint script
+ */
+Script.prototype.isSparkMint = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_SPARKMINT;
+};
+
+/**
+ * @returns {boolean} if this is a sparksmint script
+ */
+Script.prototype.isSparkSMint = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_SPARKSMINT;
+};
+
+/**
+ * @returns {boolean} if this is a spark spend split script
+ */
+Script.prototype.isSparkSpend = function () {
+  return this.chunks.length > 0 && this.chunks[0].opcodenum === Opcode.OP_SPARKSPEND;
+};
 
 /**
  * @returns {boolean} if this is an Elysium transaction script
@@ -632,6 +652,9 @@ Script.types.SIGMA_SPEND = 'Sigmaspend';
 Script.types.LELANTUS_MINT = 'Lelantusmint';
 Script.types.LELANTUS_JMINT = 'Lelantusjmint';
 Script.types.LELANTUS_JOIN_SPLIT = 'Lelantusjsplit';
+Script.types.SPARKMINT = 'Sparkmint';
+Script.types.SPARKSMINT = 'Sparksmint';
+Script.types.SPARKSPEND = 'Sparkspend';
 Script.types.ELYSIUM_TX = 'Elysium';
 
 Script.OP_RETURN_STANDARD_SIZE = 16384;
@@ -659,6 +682,8 @@ Script.outputIdentifiers.SCRIPTHASH_OUT = Script.prototype.isScriptHashOut;
 Script.outputIdentifiers.DATA_OUT = Script.prototype.isDataOut;
 // FIRO related part
 Script.firoOutputIdentifiers = {};
+Script.firoOutputIdentifiers.SPARKSMINT = Script.prototype.isSparkSMint;
+Script.firoOutputIdentifiers.SPARKMINT = Script.prototype.isSparkMint;
 Script.firoOutputIdentifiers.LELANTUS_JMINT = Script.prototype.isLelantusJMint;
 Script.firoOutputIdentifiers.LELANTUS_MINT = Script.prototype.isLelantusMint;
 Script.firoOutputIdentifiers.SIGMA_MINT = Script.prototype.isSigmaMint;
@@ -690,6 +715,7 @@ Script.inputIdentifiers.MULTISIG_IN = Script.prototype.isMultisigIn;
 Script.inputIdentifiers.SCRIPTHASH_IN = Script.prototype.isScriptHashIn;
 // FIRO related part
 Script.firoInputIdentifiers = {};
+Script.firoInputIdentifiers.SPARKSPEND = Script.prototype.isSparkSpend;
 Script.firoInputIdentifiers.LELANTUS_JOIN_SPLIT = Script.prototype.isLelantusJoinSplit;
 Script.firoInputIdentifiers.SIGMA_SPEND = Script.prototype.isSigmaSpend;
 Script.firoInputIdentifiers.ZERO_COIN_SPEND = Script.prototype.isZeroCoinSpend;
